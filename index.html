@@ -163,15 +163,15 @@
                 <div>
                     <h3>Buy</h3>
                     <div id="shopItems">
-                        <button id="buyRifleButton">Rifle</button>
-                        <button id="buyFishingRodButton">Fishing Rod</button>
+                        <button id="buyRifleButton">Buy Rifle (Zenas $50)</button>
+                        <button id="buyFishingRodButton">Buy Fishing Rod (Zenas $30)</button>
                     </div>
                 </div>
                 <div>
                     <h3>Sell</h3>
                     <div id="shopItems">
-                        <button id="sellAnimalButton">Sell Animal</button>
-                        <button id="sellFishButton">Sell Fish</button>
+                        <button id="sellAnimalButton">Sell Animal (Zenas $20)</button>
+                        <button id="sellFishButton">Sell Fish (Zenas $10)</button>
                     </div>
                 </div>
             </div>
@@ -215,17 +215,17 @@
     <script>
         let balance = 100;
         let bankBalance = 0;
-        let inventory = { 'Rifle': 0, 'Fishing Rod': 0, 'Animals': {}, 'Fish': {} };
+        let inventory = { 'Rifle': 0, 'Fishing Rod': 0, 'Animals': 0, 'Fish': 0 };
 
         function updateBalanceDisplay() {
-            console.log("Updating balance display...");
             document.getElementById('balance').innerText = `Balance: Zenas $${balance} | Bank: Zenas $${bankBalance} | Total: Zenas $${balance + bankBalance}`;
             document.getElementById('rifleCount').innerText = inventory['Rifle'];
             document.getElementById('fishingRodCount').innerText = inventory['Fishing Rod'];
+            document.getElementById('animalCount').innerText = inventory['Animals'] > 0 ? inventory['Animals'] : 'None';
+            document.getElementById('fishCount').innerText = inventory['Fish'] > 0 ? inventory['Fish'] : 'None';
         }
 
         function showTab(tabName) {
-            console.log(`Switching to tab: ${tabName}`);
             document.querySelectorAll('.content').forEach(content => {
                 content.classList.remove('active');
             });
@@ -242,12 +242,12 @@
         document.getElementById('depositButton').addEventListener('click', () => {
             const amount = parseFloat(prompt("Enter amount to deposit:"));
             if (amount > 0 && amount <= balance) {
-                bankBalance += amount;
                 balance -= amount;
+                bankBalance += amount;
                 updateBalanceDisplay();
-                alert(`You have deposited Zenas ${amount} into the bank.`);
+                alert(`You deposited Zenas $${amount}.`);
             } else {
-                alert("Invalid deposit amount.");
+                alert("Invalid amount.");
             }
         });
 
@@ -258,15 +258,14 @@
                 bankBalance -= amount;
                 balance += amount;
                 updateBalanceDisplay();
-                alert(`You have withdrawn Zenas ${amount} from the bank.`);
+                alert(`You withdrew Zenas $${amount}.`);
             } else {
-                alert("Invalid withdraw amount.");
+                alert("Invalid amount.");
             }
         });
 
-        // Example of random outcome generators
         function randomizeJob() {
-            const jobs = ["Freelancer", "Merchant", "Miner", "Artist", "Fisherman"];
+            const jobs = ["Blacksmith", "Merchant", "Miner", "Artist", "Fisherman"];
             const selectedJob = jobs[Math.floor(Math.random() * jobs.length)];
             return `You worked as a ${selectedJob} and earned Zenas 50!`;
         }
@@ -283,7 +282,21 @@
             return `You committed a ${selectedCrime}. Watch out!`;
         }
 
-        // Add button actions (examples)
+        function randomizeHunt() {
+            const animals = ["deer", "rabbit", "bear"];
+            const selectedAnimal = animals[Math.floor(Math.random() * animals.length)];
+            inventory['Animals'] += 1;
+            return `You hunted a ${selectedAnimal} and added it to your inventory!`;
+        }
+
+        function randomizeFish() {
+            const fishTypes = ["salmon", "trout", "tuna"];
+            const selectedFish = fishTypes[Math.floor(Math.random() * fishTypes.length)];
+            inventory['Fish'] += 1;
+            return `You caught a ${selectedFish} and added it to your inventory!`;
+        }
+
+        // Add button actions
         document.getElementById('workButton').addEventListener('click', () => {
             const message = randomizeJob();
             balance += 50;
@@ -300,12 +313,69 @@
 
         document.getElementById('crimeButton').addEventListener('click', () => {
             const message = randomizeCrime();
-            balance += 100;
+            balance += 100; // Example, can be adjusted
             updateBalanceDisplay();
             document.getElementById('economyMessage').innerText = message;
         });
 
-        // Save/load functionality (simulated)
+        document.getElementById('huntButton').addEventListener('click', () => {
+            const message = randomizeHunt();
+            updateBalanceDisplay();
+            document.getElementById('huntResult').innerText = message;
+        });
+
+        document.getElementById('fishButton').addEventListener('click', () => {
+            const message = randomizeFish();
+            updateBalanceDisplay();
+            document.getElementById('fishResult').innerText = message;
+        });
+
+        // Shop functionalities
+        document.getElementById('buyRifleButton').addEventListener('click', () => {
+            if (balance >= 50) {
+                balance -= 50;
+                inventory['Rifle'] += 1;
+                updateBalanceDisplay();
+                document.getElementById('shopMessage').innerText = "You bought a Rifle!";
+            } else {
+                document.getElementById('shopMessage').innerText = "Not enough Zenas!";
+            }
+        });
+
+        document.getElementById('buyFishingRodButton').addEventListener('click', () => {
+            if (balance >= 30) {
+                balance -= 30;
+                inventory['Fishing Rod'] += 1;
+                updateBalanceDisplay();
+                document.getElementById('shopMessage').innerText = "You bought a Fishing Rod!";
+            } else {
+                document.getElementById('shopMessage').innerText = "Not enough Zenas!";
+            }
+        });
+
+        document.getElementById('sellAnimalButton').addEventListener('click', () => {
+            if (inventory['Animals'] > 0) {
+                balance += 20;
+                inventory['Animals'] -= 1;
+                updateBalanceDisplay();
+                document.getElementById('shopMessage').innerText = "You sold an Animal for Zenas 20!";
+            } else {
+                document.getElementById('shopMessage').innerText = "No Animals to sell!";
+            }
+        });
+
+        document.getElementById('sellFishButton').addEventListener('click', () => {
+            if (inventory['Fish'] > 0) {
+                balance += 10;
+                inventory['Fish'] -= 1;
+                updateBalanceDisplay();
+                document.getElementById('shopMessage').innerText = "You sold a Fish for Zenas 10!";
+            } else {
+                document.getElementById('shopMessage').innerText = "No Fish to sell!";
+            }
+        });
+
+        // Save/load functionality
         document.getElementById('saveProgressButton').addEventListener('click', () => {
             const saveData = {
                 balance,
