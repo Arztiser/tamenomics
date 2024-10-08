@@ -56,13 +56,13 @@
         }
 
         .content {
-            display: none; /* Hide all content by default */
+            display: none;
             text-align: center;
             margin-top: 20px;
         }
 
         .content.active {
-            display: block; /* Show only the active tab */
+            display: block;
         }
 
         button {
@@ -194,8 +194,11 @@
         <div id="economyTab" class="content">
             <h1>Economy</h1>
             <button id="workButton">Work for Zenas</button>
+            <p id="workEarnings"></p> <!-- Added work earnings display -->
             <button id="searchZenasButton">Search for Zenas</button>
+            <p id="searchEarnings"></p> <!-- Added search earnings display -->
             <button id="crimeButton">Commit a Crime</button>
+            <p id="crimeEarnings"></p> <!-- Added crime earnings display -->
             <p id="economyMessage"></p>
         </div>
 
@@ -222,88 +225,55 @@
         let lastSearchTime = 0; // Store last search for Zenas time in milliseconds
         let lastCrimeTime = 0; // Store last crime time in milliseconds
 
-        // List of 100 jobs
-        const jobs = [
-            "Carpenter", "Teacher", "Doctor", "Chef", "Mechanic", "Driver", "Programmer", "Electrician", "Nurse", "Waiter", 
-            "Artist", "Lawyer", "Scientist", "Barber", "Construction Worker", "Delivery Driver", "Gardener", "Plumber", 
-            "Musician", "Dancer", "Actor", "Baker", "Blacksmith", "Farmer", "Pilot", "Photographer", "Librarian", "Firefighter", 
-            "Police Officer", "Vet", "Journalist", "Painter", "Taxi Driver", "Architect", "Therapist", "Dentist", "Consultant", 
-            "Translator", "Fitness Trainer", "Janitor", "Web Designer", "Graphic Designer", "Receptionist", "Security Guard", 
-            "Banker", "Engineer", "Biologist", "Surgeon", "Lab Technician", "Accountant", "Stock Trader", "Butcher", "Florist", 
-            "Tailor", "Mechanic", "Psychologist", "Customs Officer", "Social Worker", "Real Estate Agent", "Barista", "Model", 
-            "Photographer", "Blogger", "Content Creator", "YouTuber", "Influencer", "Makeup Artist", "Tattoo Artist", "Pharmacist", 
-            "Retail Assistant", "IT Specialist", "Market Analyst", "Product Manager", "Public Relations Officer", "Tour Guide", 
-            "Event Planner", "Travel Agent", "Yoga Instructor", "Nutritionist", "Life Coach", "Consultant", "Art Curator", "Jeweler", 
-            "Radio Presenter", "DJ", "Housekeeper", "Personal Assistant", "Chauffeur", "Event Coordinator", "Personal Trainer", 
-            "Pet Sitter", "Dog Walker", "Bartender", "Pizza Maker", "Cabin Crew", "Sculptor", "Director", "Film Producer", 
-            "Interior Designer", "Landscape Architect", "Marine Biologist", "Video Game Developer", "Writer", "Proofreader"
-        ];
-
-        // List of 100 search locations
-        const searchLocations = [
-            "Beach", "Park", "Forest", "Mountain", "City Center", "Suburb", "Lake", "Riverbank", "Farm", "Desert", 
-            "Warehouse", "Old Barn", "Parking Lot", "Shopping Mall", "Junkyard", "Cave", "Cliffside", "Abandoned House", 
-            "Airport", "Bus Station", "Train Station", "Subway", "Public Restroom", "Amusement Park", "Museum", "Library", 
-            "School Yard", "Highway", "Bridge", "Castle", "Skyscraper Rooftop", "Street Market", "Construction Site", "Pier", 
-            "Fishing Dock", "Old Bridge", "Mountain Trail", "Campsite", "Swamp", "Jungle", "Zoo", "Power Plant", "Dam", 
-            "Quarry", "Factory", "Mine", "Sports Stadium", "Theme Park", "Public Garden", "Palace", "Court House", "Graveyard", 
-            "Nightclub", "Prison", "Wildlife Reserve", "National Park", "Marketplace", "Campground", "Race Track", "Warehouse District", 
-            "Industrial Zone", "Hiking Trail", "Military Base", "Bunker", "Airfield", "Cliff Edge", "Ski Resort", "Golf Course", 
-            "Dockyard", "Shipping Port", "Bus Depot", "RV Park", "Waterfall", "Forest Glade", "Canyon", "Lighthouse", 
-            "Gas Station", "Rest Stop", "Farmhouse", "Fishing Hut", "Railway Tracks", "Underground Tunnel", "Cellar", 
-            "Greenhouse", "Public Plaza", "Shopping District", "Country Lane", "Rocky Shore", "Secluded Cabin", "Field", 
-            "Island Beach", "Mountain Lodge", "Abandoned Church", "Fishing Boat", "Motel", "Art Gallery", "Boardwalk", 
-            "Train Yard", "Overgrown Orchard", "Storage Unit", "Snowy Peak"
-        ];
-
-        // List of 100 crimes
-        const crimes = [
-            "Pickpocketing", "Shoplifting", "Vandalism", "Car Theft", "Breaking and Entering", "Embezzlement", "Fraud", "Identity Theft", 
-            "Drug Trafficking", "Money Laundering", "Counterfeiting", "Hacking", "Robbery", "Bribery", "Smuggling", "Arson", 
-            "Assault", "Mugging", "Blackmail", "Extortion", "Tax Evasion", "Poaching", "Human Trafficking", "Organized Crime", 
-            "Armed Robbery", "Illegal Gambling", "Bank Robbery", "Piracy", "Kidnapping", "Prostitution", "Cybercrime", 
-            "Burglary", "Forgery", "Credit Card Fraud", "Wire Fraud", "Check Fraud", "Ponzi Scheme", "Insurance Fraud", "Hit and Run", 
-            "Insider Trading", "Espionage", "Street Racing", "Illegal Dumping", "Counterfeit Goods", "Tax Fraud", "Scam", 
-            "Terrorism", "Drug Dealing", "Loan Sharking", "Illegal Betting", "Organ Trafficking", "Environmental Crime", 
-            "Gun Running", "Vehicle Hijacking", "Hostage Situation", "Hate Crime", "Political Corruption", "Election Fraud", 
-            "Extortion by Force", "Corruption", "Fraudulent Investment Scheme", "Sale of Stolen Goods", "Extorting Political Favors", 
-            "Arms Trafficking", "Online Fraud", "Fake Passport Selling", "Procuring Prostitution", "Illegal Weapon Selling", 
-            "Burglary with Weapons", "Drug Manufacturing", "Selling Controlled Substances", "Distributing Pirated Media", 
-            "Organized Tax Evasion", "Racketeering", "Stalking", "Corporate Espionage", "Software Piracy", "Forgery of Legal Documents", 
-            "Fake Currency Distribution", "Breaking into a Government Facility", "Espionage Against a Foreign Government", 
-            "Treason", "Sabotage", "Trafficking of Endangered Species", "Cultural Heritage Trafficking", "Money Embezzlement"
-        ];
-
-        function getRandomElement(arr) {
-            return arr[Math.floor(Math.random() * arr.length)];
+        function updateBalanceDisplay() {
+            document.getElementById('balance').innerText = `Balance: Zenas $${balance} | Bank: Zenas $${bankBalance} | Total: Zenas $${balance + bankBalance}`;
+            document.getElementById('rifleCount').innerText = inventory['Rifle'];
+            document.getElementById('fishingRodCount').innerText = inventory['Fishing Rod'];
+            updateInventoryDisplay();
         }
 
-        document.getElementById('workButton').addEventListener('click', function () {
-            let randomJob = getRandomElement(jobs);
-            document.getElementById('economyMessage').textContent = `You worked as a ${randomJob} and earned some Zenas!`;
-        });
+        function updateInventoryDisplay() {
+            const animals = inventory['Animals'];
+            const fish = inventory['Fish'];
 
-        document.getElementById('searchZenasButton').addEventListener('click', function () {
-            let randomLocation = getRandomElement(searchLocations);
-            document.getElementById('economyMessage').textContent = `You searched for Zenas at the ${randomLocation} and found some!`;
-        });
+            const animalList = Object.entries(animals).map(([animal, count]) => `${animal} x${count}`).join(', ') || 'None';
+            const fishList = Object.entries(fish).map(([fishType, count]) => `${fishType} x${count}`).join(', ') || 'None';
 
-        document.getElementById('crimeButton').addEventListener('click', function () {
-            let randomCrime = getRandomElement(crimes);
-            document.getElementById('economyMessage').textContent = `You committed ${randomCrime}! Be careful...`;
-        });
-
-        function showTab(tabId) {
-            let tabs = document.getElementsByClassName('content');
-            for (let i = 0; i < tabs.length; i++) {
-                tabs[i].classList.remove('active');
-            }
-            document.getElementById(tabId).classList.add('active');
-
-            let links = document.querySelectorAll('.topnav a');
-            links.forEach(link => link.classList.remove('active'));
-            document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+            document.getElementById('animalCount').innerText = animalList;
+            document.getElementById('fishCount').innerText = fishList;
         }
+
+        function showTab(tabName) {
+            // Hide all content
+            const tabs = document.querySelectorAll('.content');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show the selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Update the active class in topnav
+            const navLinks = document.querySelectorAll('.topnav a');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`.topnav a[onclick="showTab('${tabName}')"]`).classList.add('active');
+        }
+
+        // Function to add Zenas and display earning messages in the Economy tab
+        function updateEarnings(id, amount) {
+            const earningsDisplay = document.getElementById(id);
+            balance += amount;
+            earningsDisplay.innerText = `You earned Zenas $${amount}!`;
+            updateBalanceDisplay();
+        }
+
+        document.getElementById('workButton').addEventListener('click', () => updateEarnings('workEarnings', 10));
+        document.getElementById('searchZenasButton').addEventListener('click', () => updateEarnings('searchEarnings', 20));
+        document.getElementById('crimeButton').addEventListener('click', () => updateEarnings('crimeEarnings', 30));
+
+        updateBalanceDisplay();
     </script>
 </body>
 
