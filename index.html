@@ -4,41 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#2c9118">
-    <title>Tamenomics</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10:wght@100;300;400;500;700;900&display=swap">
+    <title>Economy Game</title>
     <style>
-        /* Global styles */
         body {
-            font-family: 'Jersey 10', sans-serif;
-            font-size: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
         }
 
         .topnav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
             background-color: #333;
-            padding: 0 16px;
-            height: 60px;
-        }
-
-        .topnav h1 {
-            margin: 0;
-            font-size: 24px;
-            color: #f2f2f2;
+            overflow: hidden;
         }
 
         .topnav a {
-            display: inline-block;
-            color: #f2f2f2;
+            float: left;
+            display: block;
+            color: white;
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
-            font-size: 18px;
-            white-space: nowrap;
         }
 
         .topnav a:hover {
@@ -46,207 +32,144 @@
             color: black;
         }
 
-        .topnav a.active {
-            background-color: #2c9118;
-            color: white;
-        }
-
-        .container {
-            margin: 20px;
-        }
-
         .content {
-            display: none; /* Hide all content by default */
-            text-align: center;
-            margin-top: 20px;
+            padding: 20px;
+            display: none;
+            background-color: white;
+            border-radius: 5px;
+            margin: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .content.active {
-            display: block; /* Show only the active tab */
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 5px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        /* Flexbox for shop items */
-        #shop {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px auto;
-            width: 600px;
-        }
-
-        #shop div {
-            flex: 1;
-            margin: 10px;
-        }
-
-        #shop h3 {
-            margin: 0;
-        }
-
-        #shopItems {
-            display: flex;
-            justify-content: space-around;
-            margin: 10px 0;
-        }
-
-        #inventory {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin: 20px auto;
-            width: 300px;
-        }
-
-        #huntingFishing {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 20px;
-        }
-
-        #huntingFishingButtons {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0;
+            display: block;
         }
     </style>
 </head>
 
 <body>
-
-    <header>
-        <div class="topnav">
-            <h1><a href="#header" class="logo">Tamenomics</a></h1>
-            <div class="topnav-right">
-                <a href="#" onclick="showTab('homeTab')" class="active">Home</a>
-                <a href="#" onclick="showTab('balanceTab')">Balance</a>
-                <a href="#" onclick="showTab('shopTab')">Shop</a>
-                <a href="#" onclick="showTab('inventoryTab')">Inventory</a>
-                <a href="#" onclick="showTab('economyTab')">Economy</a>
-                <a href="#" onclick="showTab('huntingFishingTab')">Hunting/Fishing</a>
-            </div>
-        </div>
-    </header>
-
-    <div class="container">
-        <div id="homeTab" class="content active">
-            <h1>Welcome to Tamenomics</h1>
-            <p>Manage your resources, hunt, fish, and expand your inventory!</p>
-            <button id="saveProgressButton">Save Progress</button>
-            <button id="loadProgressButton">Load Progress</button>
-        </div>
-
-        <div id="balanceTab" class="content">
-            <h1>Your Balance</h1>
-            <p id="balance">Balance: Zenas $100 | Bank: Zenas $0 | Total: Zenas $100</p>
-            <button id="depositButton">Deposit Zenas</button>
-            <button id="withdrawButton">Withdraw Zenas</button>
-        </div>
-
-        <div id="shopTab" class="content">
-            <h1>Shop</h1>
-            <div id="shop">
-                <div>
-                    <h3>Buy</h3>
-                    <div id="shopItems">
-                        <button id="buyRifleButton">Rifle (Cost: Zenas $50)</button>
-                        <button id="buyFishingRodButton">Fishing Rod (Cost: Zenas $30)</button>
-                    </div>
-                </div>
-                <div>
-                    <h3>Sell</h3>
-                    <div id="shopItems">
-                        <button id="sellAnimalButton">Sell Animal</button>
-                        <button id="sellFishButton">Sell Fish</button>
-                    </div>
-                </div>
-            </div>
-            <p id="shopMessage"></p>
-        </div>
-
-        <div id="inventoryTab" class="content">
-            <h1>Inventory</h1>
-            <div id="inventory">
-                <h1>Items:</h1>
-                <div class="item">Rifle x<span id="rifleCount">0</span></div>
-                <div class="item">Fishing Rod x<span id="fishingRodCount">0</span></div>
-                <h1>Animals:</h1>
-                <div id="animalInventory"></div>
-                <h1>Fish:</h1>
-                <div id="fishInventory"></div>
-            </div>
-        </div>
-
-        <div id="economyTab" class="content">
-            <h1>Economy</h1>
-            <button id="workButton">Work for Zenas</button>
-            <button id="searchZenasButton">Search for Zenas</button>
-            <button id="crimeButton">Commit a Crime</button>
-            <p id="economyMessage"></p>
-        </div>
-
-        <div id="huntingFishingTab" class="content">
-            <h1>Hunting/Fishing</h1>
-            <div id="huntingFishing">
-                <div id="huntingFishingButtons">
-                    <button id="huntButton">Hunt</button>
-                    <button id="fishButton">Fish</button>
-                </div>
-                <p id="huntResult"></p>
-                <p id="fishResult"></p>
-            </div>
-        </div>
+    <div class="topnav">
+        <a href="javascript:void(0)" onclick="showTab('workTab')">Work</a>
+        <a href="javascript:void(0)" onclick="showTab('searchTab')">Search</a>
+        <a href="javascript:void(0)" onclick="showTab('crimeTab')">Crime</a>
+        <a href="javascript:void(0)" onclick="showTab('huntTab')">Hunt</a>
+        <a href="javascript:void(0)" onclick="showTab('fishTab')">Fish</a>
+        <a href="javascript:void(0)" onclick="showTab('shopTab')">Shop</a>
+        <a href="javascript:void(0)" onclick="showTab('bankTab')">Bank</a>
+        <a href="javascript:void(0)" onclick="loadGame()">Load Game</a>
     </div>
 
-    <script>
-        let balance = 100;
-        let bankBalance = 0;
-        let inventory = { 'Rifle': 0, 'Fishing Rod': 0, 'Animals': {}, 'Fish': {} };
-        let lastHuntTime = 0; // Store last hunt time in milliseconds
-        let lastWorkTime = 0; // Store last work time in milliseconds
-        let lastFishTime = 0; // Store last fish time in milliseconds
-        let lastSearchTime = 0; // Store last search for Zenas time in milliseconds
-        let lastCrimeTime = 0; // Store last crime time in milliseconds
+    <div class="content active" id="workTab">
+        <h2>Work</h2>
+        <button id="workButton">Work</button>
+        <p id="economyMessage"></p>
+    </div>
 
-        function updateBalanceDisplay() {
-            console.log("Updating balance display...");
-            document.getElementById('balance').innerText = `Balance: Zenas $${balance} | Bank: Zenas $${bankBalance} | Total: Zenas $${balance + bankBalance}`;
-            document.getElementById('rifleCount').innerText = inventory['Rifle'];
-            document.getElementById('fishingRodCount').innerText = inventory['Fishing Rod'];
-            updateInventoryDisplay();
+    <div class="content" id="searchTab">
+        <h2>Search</h2>
+        <button id="searchZenasButton">Search for Zenas</button>
+        <p id="economyMessage"></p>
+    </div>
+
+    <div class="content" id="crimeTab">
+        <h2>Crime</h2>
+        <button id="crimeButton">Commit a Crime</button>
+        <p id="economyMessage"></p>
+    </div>
+
+    <div class="content" id="huntTab">
+        <h2>Hunt</h2>
+        <button id="huntButton">Hunt</button>
+        <p id="huntResult"></p>
+    </div>
+
+    <div class="content" id="fishTab">
+        <h2>Fish</h2>
+        <button id="fishButton">Fish</button>
+        <p id="fishResult"></p>
+    </div>
+
+    <div class="content" id="shopTab">
+        <h2>Shop</h2>
+        <button id="buyRifleButton">Buy Rifle (50 Zenas)</button>
+        <button id="buyFishingRodButton">Buy Fishing Rod (30 Zenas)</button>
+        <p id="shopMessage"></p>
+    </div>
+
+    <div class="content" id="bankTab">
+        <h2>Bank</h2>
+        <button id="depositButton">Deposit</button>
+        <button id="withdrawButton">Withdraw</button>
+        <p id="bankMessage"></p>
+    </div>
+
+    <p>Balance: <span id="balanceDisplay">0</span> Zenas</p>
+    <p>Animals Caught: <span id="animalsDisplay"></span></p>
+    <p>Fish Caught: <span id="fishDisplay"></span></p>
+
+    <script>
+        let balance = 0;
+        let bankBalance = 0;
+        let lastWorkTime = 0;
+        let lastSearchTime = 0;
+        let lastCrimeTime = 0;
+        let lastHuntTime = 0;
+        let lastFishTime = 0;
+
+        // Initialize inventory
+        const inventory = {
+            Animals: {},
+            Fish: {},
+            "Rifle": 0,
+            "Fishing Rod": 0,
+        };
+
+        function loadGame() {
+            const savedData = JSON.parse(localStorage.getItem('gameData'));
+            if (savedData) {
+                balance = savedData.balance;
+                bankBalance = savedData.bankBalance;
+                lastWorkTime = savedData.lastWorkTime;
+                lastSearchTime = savedData.lastSearchTime;
+                lastCrimeTime = savedData.lastCrimeTime;
+                lastHuntTime = savedData.lastHuntTime;
+                lastFishTime = savedData.lastFishTime;
+                Object.assign(inventory, savedData.inventory);
+                updateDisplay();
+                alert("Game loaded successfully!");
+            } else {
+                alert("No saved game found.");
+            }
         }
 
-        function updateInventoryDisplay() {
-            const animalInventory = document.getElementById('animalInventory');
-            const fishInventory = document.getElementById('fishInventory');
+        function saveGame() {
+            const gameData = {
+                balance,
+                bankBalance,
+                lastWorkTime,
+                lastSearchTime,
+                lastCrimeTime,
+                lastHuntTime,
+                lastFishTime,
+                inventory,
+            };
+            localStorage.setItem('gameData', JSON.stringify(gameData));
+            alert("Game saved successfully!");
+        }
 
-            // Clear previous inventory displays
-            animalInventory.innerHTML = '';
-            fishInventory.innerHTML = '';
+        function updateDisplay() {
+            document.getElementById('balanceDisplay').innerText = balance;
+            document.getElementById('animalsDisplay').innerText = formatInventory(inventory.Animals);
+            document.getElementById('fishDisplay').innerText = formatInventory(inventory.Fish);
+            updateBalanceDisplay();
+        }
 
-            // Update animal inventory
-            for (const animal in inventory['Animals']) {
-                animalInventory.innerHTML += `${animal} x ${inventory['Animals'][animal]}<br>`;
-            }
+        function formatInventory(itemInventory) {
+            return Object.entries(itemInventory).map(([item, amount]) => `${item} x ${amount}`).join(', ') || 'None';
+        }
 
-            // Update fish inventory
-            for (const fish in inventory['Fish']) {
-                fishInventory.innerHTML += `${fish} x ${inventory['Fish'][fish]}<br>`;
-            }
+        function updateBalanceDisplay() {
+            document.getElementById('balanceDisplay').innerText = balance;
         }
 
         function showTab(tabName) {
@@ -267,13 +190,13 @@
         function randomizeJob() {
             const jobs = ["Freelancer", "Merchant", "Miner", "Artist", "Fisherman"];
             const selectedJob = jobs[Math.floor(Math.random() * jobs.length)];
-            return `You worked as a ${selectedJob} and earned Zenas 50!`;
+            return `You worked as a ${selectedJob} and earned 50 Zenas!`;
         }
 
         function randomizePlace() {
             const places = ["Forest", "Beach", "Mountains", "City", "Desert"];
             const selectedPlace = places[Math.floor(Math.random() * places.length)];
-            return `You went to the ${selectedPlace} to search for Zenas and found Zenas 20!`;
+            return `You went to the ${selectedPlace} to search for Zenas and found 20 Zenas!`;
         }
 
         function randomizeCrime() {
@@ -302,146 +225,125 @@
             ];
             const selectedAnimal = animals[Math.floor(Math.random() * animals.length)];
             if (Math.random() < selectedAnimal.failChance) {
-                return `You failed to hunt and earned no Zenas.`;
+                return `You failed to catch a ${selectedAnimal.name}.`;
             } else {
-                // Increase specific animal count
-                inventory['Animals'][selectedAnimal.name] = (inventory['Animals'][selectedAnimal.name] || 0) + 1;
-                return `You caught a ${selectedAnimal.name}!`;
+                const amount = Math.floor(Math.random() * 3) + 1; // Catch 1-3 animals
+                inventory.Animals[selectedAnimal.name] = (inventory.Animals[selectedAnimal.name] || 0) + amount;
+                return `${selectedAnimal.name} x ${amount}`;
             }
         }
 
         function randomizeFish() {
-            const fish = [
-                { name: "Salmon", failChance: 0.3 },
-                { name: "Trout", failChance: 0.4 },
-                { name: "Tuna", failChance: 0.5 },
-                { name: "Bass", failChance: 0.2 }
+            const fishes = [
+                { name: "Trout", failChance: 0.3 },
+                { name: "Salmon", failChance: 0.4 },
+                { name: "Catfish", failChance: 0.5 },
+                { name: "Tuna", failChance: 0.6 }
             ];
-            const selectedFish = fish[Math.floor(Math.random() * fish.length)];
+            const selectedFish = fishes[Math.floor(Math.random() * fishes.length)];
             if (Math.random() < selectedFish.failChance) {
-                return `You failed to catch any fish.`;
+                return `You failed to catch a ${selectedFish.name}.`;
             } else {
-                // Increase specific fish count
-                inventory['Fish'][selectedFish.name] = (inventory['Fish'][selectedFish.name] || 0) + 1;
-                return `You caught a ${selectedFish.name}!`;
+                const amount = Math.floor(Math.random() * 3) + 1; // Catch 1-3 fish
+                inventory.Fish[selectedFish.name] = (inventory.Fish[selectedFish.name] || 0) + amount;
+                return `${selectedFish.name} x ${amount}`;
             }
         }
 
-        // Add button actions (examples)
+        // Event Listeners
         document.getElementById('workButton').addEventListener('click', () => {
             const currentTime = Date.now();
             if (currentTime - lastWorkTime < 24 * 60 * 60 * 1000) {
-                alert('You can only work once every 24 hours.');
+                alert("You can only work once per day.");
                 return;
             }
-            const message = randomizeJob();
-            balance += 50;
             lastWorkTime = currentTime;
-            updateBalanceDisplay();
-            document.getElementById('economyMessage').innerText = message;
+            const message = randomizeJob();
+            balance += 50; // Example balance increase
+            updateDisplay();
+            saveGame(); // Save after working
+            alert(message);
         });
 
         document.getElementById('searchZenasButton').addEventListener('click', () => {
             const currentTime = Date.now();
             if (currentTime - lastSearchTime < 30 * 60 * 1000) {
-                alert('You can only search for Zenas every 30 minutes.');
+                alert("You can only search for Zenas once every 30 minutes.");
                 return;
             }
-            const message = randomizePlace();
-            balance += 20;
             lastSearchTime = currentTime;
-            updateBalanceDisplay();
-            document.getElementById('economyMessage').innerText = message;
+            const message = randomizePlace();
+            balance += 20; // Example balance increase
+            updateDisplay();
+            saveGame(); // Save after searching
+            alert(message);
         });
 
         document.getElementById('crimeButton').addEventListener('click', () => {
             const currentTime = Date.now();
             if (currentTime - lastCrimeTime < 30 * 60 * 1000) {
-                alert('You can only commit a crime every 30 minutes.');
+                alert("You can only commit a crime once every 30 minutes.");
                 return;
             }
+            lastCrimeTime = currentTime;
             const message = randomizeCrime();
             if (message.includes('earned')) {
-                balance += parseInt(message.match(/earned Zenas (\d+)/)[1]);
+                const reward = parseInt(message.match(/\d+/)[0]);
+                balance += reward; // Example balance increase
+                updateDisplay();
+                saveGame(); // Save after committing crime
             }
-            lastCrimeTime = currentTime;
-            updateBalanceDisplay();
-            document.getElementById('economyMessage').innerText = message;
+            alert(message);
         });
 
         document.getElementById('huntButton').addEventListener('click', () => {
             const currentTime = Date.now();
             if (currentTime - lastHuntTime < 60 * 60 * 1000) {
-                alert('You can only hunt once per hour.');
+                alert("You can only hunt once every hour.");
                 return;
             }
-            const message = randomizeHunt();
             lastHuntTime = currentTime;
-            updateBalanceDisplay();
+            const message = randomizeHunt();
             document.getElementById('huntResult').innerText = message;
+            updateDisplay();
+            saveGame(); // Save after hunting
         });
 
         document.getElementById('fishButton').addEventListener('click', () => {
             const currentTime = Date.now();
             if (currentTime - lastFishTime < 60 * 60 * 1000) {
-                alert('You can only fish once per hour.');
+                alert("You can only fish once every hour.");
                 return;
             }
-            const message = randomizeFish();
             lastFishTime = currentTime;
-            updateBalanceDisplay();
+            const message = randomizeFish();
             document.getElementById('fishResult').innerText = message;
+            updateDisplay();
+            saveGame(); // Save after fishing
         });
 
-        // Buying and Selling Logic
         document.getElementById('buyRifleButton').addEventListener('click', () => {
-            if (balance < 50) {
-                alert('Not enough Zenas to buy a Rifle!');
-                return;
+            if (balance >= 50) {
+                balance -= 50;
+                inventory.Rifle++;
+                updateDisplay();
+                saveGame(); // Save after buying
+                document.getElementById('shopMessage').innerText = "You bought a Rifle!";
+            } else {
+                document.getElementById('shopMessage').innerText = "Not enough Zenas!";
             }
-            balance -= 50;
-            inventory['Rifle'] += 1;
-            updateBalanceDisplay();
-            document.getElementById('shopMessage').innerText = 'You bought a Rifle!';
         });
 
         document.getElementById('buyFishingRodButton').addEventListener('click', () => {
-            if (balance < 30) {
-                alert('Not enough Zenas to buy a Fishing Rod!');
-                return;
+            if (balance >= 30) {
+                balance -= 30;
+                inventory["Fishing Rod"]++;
+                updateDisplay();
+                saveGame(); // Save after buying
+                document.getElementById('shopMessage').innerText = "You bought a Fishing Rod!";
+            } else {
+                document.getElementById('shopMessage').innerText = "Not enough Zenas!";
             }
-            balance -= 30;
-            inventory['Fishing Rod'] += 1;
-            updateBalanceDisplay();
-            document.getElementById('shopMessage').innerText = 'You bought a Fishing Rod!';
-        });
-
-        document.getElementById('sellAnimalButton').addEventListener('click', () => {
-            const animals = Object.keys(inventory['Animals']);
-            if (animals.length === 0) {
-                alert('You have no animals to sell!');
-                return;
-            }
-            const animalToSell = animals[0]; // Example: sell the first animal
-            const sellAmount = inventory['Animals'][animalToSell];
-            balance += sellAmount * 10; // Assuming each animal sells for Zenas $10
-            inventory['Animals'][animalToSell] = 0; // Remove animal from inventory
-            updateBalanceDisplay();
-            document.getElementById('shopMessage').innerText = `You sold ${animalToSell} for Zenas ${sellAmount * 10}!`;
-        });
-
-        document.getElementById('sellFishButton').addEventListener('click', () => {
-            const fish = Object.keys(inventory['Fish']);
-            if (fish.length === 0) {
-                alert('You have no fish to sell!');
-                return;
-            }
-            const fishToSell = fish[0]; // Example: sell the first fish
-            const sellAmount = inventory['Fish'][fishToSell];
-            balance += sellAmount * 10; // Assuming each fish sells for Zenas $10
-            inventory['Fish'][fishToSell] = 0; // Remove fish from inventory
-            updateBalanceDisplay();
-            document.getElementById('shopMessage').innerText = `You sold ${fishToSell} for Zenas ${sellAmount * 10}!`;
         });
 
         document.getElementById('depositButton').addEventListener('click', () => {
@@ -451,10 +353,11 @@
                 alert('Invalid deposit amount!');
                 return;
             }
-            balance -= amount;
             bankBalance += amount;
-            updateBalanceDisplay();
-            document.getElementById('shopMessage').innerText = `You deposited Zenas ${amount}!`;
+            balance -= amount;
+            updateDisplay();
+            document.getElementById('bankMessage').innerText = `You deposited Zenas ${amount}!`;
+            saveGame(); // Save after depositing
         });
 
         document.getElementById('withdrawButton').addEventListener('click', () => {
@@ -466,12 +369,13 @@
             }
             bankBalance -= amount;
             balance += amount;
-            updateBalanceDisplay();
-            document.getElementById('shopMessage').innerText = `You withdrew Zenas ${amount}!`;
+            updateDisplay();
+            document.getElementById('bankMessage').innerText = `You withdrew Zenas ${amount}!`;
+            saveGame(); // Save after withdrawing
         });
 
-        // Initial display update
-        updateBalanceDisplay();
+        // Initial load
+        updateDisplay();
     </script>
 </body>
 
