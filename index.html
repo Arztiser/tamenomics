@@ -223,38 +223,21 @@
         let lastCrimeTime = 0; // Store last crime time in milliseconds
 
         function updateBalanceDisplay() {
+            console.log("Updating balance display...");
             document.getElementById('balance').innerText = `Balance: Zenas $${balance} | Bank: Zenas $${bankBalance} | Total: Zenas $${balance + bankBalance}`;
             document.getElementById('rifleCount').innerText = inventory['Rifle'];
             document.getElementById('fishingRodCount').innerText = inventory['Fishing Rod'];
-            updateInventoryDisplay();
-        }
-
-        function updateInventoryDisplay() {
-            const animals = inventory['Animals'];
-            const fish = inventory['Fish'];
-
-            const animalList = Object.entries(animals).map(([animal, count]) => `${animal} x${count}`).join(', ') || 'None';
-            const fishList = Object.entries(fish).map(([fishType, count]) => `${fishType} x${count}`).join(', ') || 'None';
-
-            document.getElementById('animalCount').innerText = animalList;
-            document.getElementById('fishCount').innerText = fishList;
         }
 
         function showTab(tabName) {
-            // Hide all content
-            const tabs = document.querySelectorAll('.content');
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
+            console.log(`Switching to tab: ${tabName}`);
+            document.querySelectorAll('.content').forEach(content => {
+                content.classList.remove('active');
             });
-
-            // Show the selected tab
             document.getElementById(tabName).classList.add('active');
-
-            // Update the active link in the navbar
-            const links = document.querySelectorAll('.topnav a');
-            links.forEach(link => {
+            document.querySelectorAll('.topnav a').forEach(link => {
                 link.classList.remove('active');
-                if (link.textContent.toLowerCase() === tabName.replace('Tab', '').toLowerCase()) {
+                if (link.innerText.toLowerCase() === tabName.replace('Tab', '').toLowerCase()) {
                     link.classList.add('active');
                 }
             });
