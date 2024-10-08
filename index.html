@@ -217,12 +217,16 @@
         let bankBalance = 0;
         let inventory = { 'Rifle': 0, 'Fishing Rod': 0, 'Animals': 0, 'Fish': 0 };
 
+        let lastWorkTime = 0;
+        let lastSearchTime = 0;
+        let lastCrimeTime = 0;
+
         function updateBalanceDisplay() {
             document.getElementById('balance').innerText = `Balance: Zenas $${balance} | Bank: Zenas $${bankBalance} | Total: Zenas $${balance + bankBalance}`;
             document.getElementById('rifleCount').innerText = inventory['Rifle'];
             document.getElementById('fishingRodCount').innerText = inventory['Fishing Rod'];
-            document.getElementById('animalCount').innerText = inventory['Animals'] > 0 ? inventory['Animals'] : 'None';
-            document.getElementById('fishCount').innerText = inventory['Fish'] > 0 ? inventory['Fish'] : 'None';
+            document.getElementById('animalCount').innerText = inventory['Animals'] > 0 ? `Animal x ${inventory['Animals']}` : 'None';
+            document.getElementById('fishCount').innerText = inventory['Fish'] > 0 ? `Fish x ${inventory['Fish']}` : 'None';
         }
 
         function showTab(tabName) {
@@ -278,8 +282,13 @@
 
         function randomizeCrime() {
             const crimes = ["Pickpocket", "Heist", "Forgery", "Smuggling", "Fraud"];
+            const success = Math.random() < 0.5; // 50% chance of success
             const selectedCrime = crimes[Math.floor(Math.random() * crimes.length)];
-            return `You committed a ${selectedCrime}. Watch out!`;
+            const earnedZenas = success ? 100 : 0;
+            return {
+                message: success ? `You committed a ${selectedCrime} and earned Zenas ${earnedZenas} Zenas!` : "You failed to commit a crime and earned no Zenas.",
+                earnedZenas
+            };
         }
 
         function randomizeHunt() {
@@ -298,6 +307,12 @@
 
         // Add button actions
         document.getElementById('workButton').addEventListener('click', () => {
+            const now = Date.now();
+            if (now - lastWorkTime < 86400000) { // 24 hours in milliseconds
+                alert("You can only work once per day.");
+                return;
+            }
+            lastWorkTime = now;
             const message = randomizeJob();
             balance += 50;
             updateBalanceDisplay();
@@ -305,6 +320,12 @@
         });
 
         document.getElementById('searchZenasButton').addEventListener('click', () => {
+            const now = Date.now();
+            if (now - lastSearchTime < 1800000) { // 30 minutes in milliseconds
+                alert("You can only search once every 30 minutes.");
+                return;
+            }
+            lastSearchTime = now;
             const message = randomizePlace();
             balance += 20;
             updateBalanceDisplay();
@@ -312,8 +333,14 @@
         });
 
         document.getElementById('crimeButton').addEventListener('click', () => {
-            const message = randomizeCrime();
-            balance += 100; // Example, can be adjusted
+            const now = Date.now();
+            if (now - lastCrimeTime < 1800000) { // 30 minutes in milliseconds
+                alert("You can only commit a crime once every 30 minutes.");
+                return;
+            }
+            lastCrimeTime = now;
+            const { message, earnedZenas } = randomizeCrime();
+            balance += earnedZenas; // Update balance based on success
             updateBalanceDisplay();
             document.getElementById('economyMessage').innerText = message;
         });
@@ -380,7 +407,10 @@
             const saveData = {
                 balance,
                 bankBalance,
-                inventory
+                inventory,
+                lastWorkTime,
+                lastSearchTime,
+                lastCrimeTime
             };
             localStorage.setItem('tamenomicsSave', JSON.stringify(saveData));
             alert('Progress saved!');
@@ -392,6 +422,9 @@
                 balance = savedData.balance;
                 bankBalance = savedData.bankBalance;
                 inventory = savedData.inventory;
+                lastWorkTime = savedData.lastWorkTime;
+                lastSearchTime = savedData.lastSearchTime;
+                lastCrimeTime = savedData.lastCrimeTime;
                 updateBalanceDisplay();
                 alert('Progress loaded!');
             } else {
