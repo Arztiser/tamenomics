@@ -216,11 +216,6 @@
         let balance = 100;
         let bankBalance = 0;
         let inventory = { 'Rifle': 0, 'Fishing Rod': 0, 'Animals': {}, 'Fish': {} };
-        let lastHuntTime = 0; // Store last hunt time in milliseconds
-        let lastWorkTime = 0; // Store last work time in milliseconds
-        let lastFishTime = 0; // Store last fish time in milliseconds
-        let lastSearchTime = 0; // Store last search for Zenas time in milliseconds
-        let lastCrimeTime = 0; // Store last crime time in milliseconds
 
         function updateBalanceDisplay() {
             console.log("Updating balance display...");
@@ -242,6 +237,32 @@
                 }
             });
         }
+
+        // Deposit functionality
+        document.getElementById('depositButton').addEventListener('click', () => {
+            const amount = parseFloat(prompt("Enter amount to deposit:"));
+            if (amount > 0 && amount <= balance) {
+                bankBalance += amount;
+                balance -= amount;
+                updateBalanceDisplay();
+                alert(`You have deposited Zenas ${amount} into the bank.`);
+            } else {
+                alert("Invalid deposit amount.");
+            }
+        });
+
+        // Withdraw functionality
+        document.getElementById('withdrawButton').addEventListener('click', () => {
+            const amount = parseFloat(prompt("Enter amount to withdraw:"));
+            if (amount > 0 && amount <= bankBalance) {
+                bankBalance -= amount;
+                balance += amount;
+                updateBalanceDisplay();
+                alert(`You have withdrawn Zenas ${amount} from the bank.`);
+            } else {
+                alert("Invalid withdraw amount.");
+            }
+        });
 
         // Example of random outcome generators
         function randomizeJob() {
