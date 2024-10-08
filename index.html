@@ -220,6 +220,8 @@
         let lastWorkTime = 0;
         let lastSearchTime = 0;
         let lastCrimeTime = 0;
+        let lastHuntTime = 0;
+        let lastFishTime = 0;
 
         function updateBalanceDisplay() {
             document.getElementById('balance').innerText = `Balance: Zenas $${balance} | Bank: Zenas $${bankBalance} | Total: Zenas $${balance + bankBalance}`;
@@ -275,9 +277,12 @@
         }
 
         function randomizePlace() {
-            const places = ["Forest", "Beach", "Mountains", "City", "Desert"];
-            const selectedPlace = places[Math.floor(Math.random() * places.length)];
-            return `You went to the ${selectedPlace} to search for Zenas and found Zenas 20!`;
+            const success = Math.random() < 0.7; // 70% chance of success
+            if (success) {
+                return `You went to search for Zenas and found Zenas 20!`;
+            } else {
+                return `You failed to find any Zenas.`;
+            }
         }
 
         function randomizeCrime() {
@@ -292,17 +297,27 @@
         }
 
         function randomizeHunt() {
-            const animals = ["deer", "rabbit", "bear"];
-            const selectedAnimal = animals[Math.floor(Math.random() * animals.length)];
-            inventory['Animals'] += 1;
-            return `You hunted a ${selectedAnimal} and added it to your inventory!`;
+            const success = Math.random() < 0.6; // 60% chance of success
+            if (success) {
+                const animals = ["deer", "rabbit", "bear"];
+                const selectedAnimal = animals[Math.floor(Math.random() * animals.length)];
+                inventory['Animals'] += 1;
+                return `You hunted a ${selectedAnimal} and added it to your inventory!`;
+            } else {
+                return "You failed to hunt and came back empty-handed.";
+            }
         }
 
         function randomizeFish() {
-            const fishTypes = ["salmon", "trout", "tuna"];
-            const selectedFish = fishTypes[Math.floor(Math.random() * fishTypes.length)];
-            inventory['Fish'] += 1;
-            return `You caught a ${selectedFish} and added it to your inventory!`;
+            const success = Math.random() < 0.6; // 60% chance of success
+            if (success) {
+                const fishTypes = ["salmon", "trout", "tuna"];
+                const selectedFish = fishTypes[Math.floor(Math.random() * fishTypes.length)];
+                inventory['Fish'] += 1;
+                return `You caught a ${selectedFish} and added it to your inventory!`;
+            } else {
+                return "You failed to catch any fish.";
+            }
         }
 
         // Add button actions
@@ -327,7 +342,9 @@
             }
             lastSearchTime = now;
             const message = randomizePlace();
-            balance += 20;
+            if (message.includes('found')) {
+                balance += 20;
+            }
             updateBalanceDisplay();
             document.getElementById('economyMessage').innerText = message;
         });
@@ -346,12 +363,24 @@
         });
 
         document.getElementById('huntButton').addEventListener('click', () => {
+            const now = Date.now();
+            if (now - lastHuntTime < 3600000) { // 1 hour in milliseconds
+                alert("You can only hunt once every hour.");
+                return;
+            }
+            lastHuntTime = now;
             const message = randomizeHunt();
             updateBalanceDisplay();
             document.getElementById('huntResult').innerText = message;
         });
 
         document.getElementById('fishButton').addEventListener('click', () => {
+            const now = Date.now();
+            if (now - lastFishTime < 3600000) { // 1 hour in milliseconds
+                alert("You can only fish once every hour.");
+                return;
+            }
+            lastFishTime = now;
             const message = randomizeFish();
             updateBalanceDisplay();
             document.getElementById('fishResult').innerText = message;
@@ -410,7 +439,9 @@
                 inventory,
                 lastWorkTime,
                 lastSearchTime,
-                lastCrimeTime
+                lastCrimeTime,
+                lastHuntTime,
+                lastFishTime
             };
             localStorage.setItem('tamenomicsSave', JSON.stringify(saveData));
             alert('Progress saved!');
@@ -425,6 +456,8 @@
                 lastWorkTime = savedData.lastWorkTime;
                 lastSearchTime = savedData.lastSearchTime;
                 lastCrimeTime = savedData.lastCrimeTime;
+                lastHuntTime = savedData.lastHuntTime;
+                lastFishTime = savedData.lastFishTime;
                 updateBalanceDisplay();
                 alert('Progress loaded!');
             } else {
