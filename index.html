@@ -163,8 +163,8 @@
                 <div>
                     <h3>Buy</h3>
                     <div id="shopItems">
-                        <button id="buyRifleButton">Rifle</button>
-                        <button id="buyFishingRodButton">Fishing Rod</button>
+                        <button id="buyRifleButton">Rifle (Cost: Zenas $50)</button>
+                        <button id="buyFishingRodButton">Fishing Rod (Cost: Zenas $30)</button>
                     </div>
                 </div>
                 <div>
@@ -306,7 +306,7 @@
             } else {
                 // Increase specific animal count
                 inventory['Animals'][selectedAnimal.name] = (inventory['Animals'][selectedAnimal.name] || 0) + 1;
-                return `You hunted a ${selectedAnimal.name}!`;
+                return `You caught a ${selectedAnimal.name}!`;
             }
         }
 
@@ -393,31 +393,84 @@
             document.getElementById('fishResult').innerText = message;
         });
 
-        // Save/load functionality (simulated)
-        document.getElementById('saveProgressButton').addEventListener('click', () => {
-            const saveData = {
-                balance,
-                bankBalance,
-                inventory
-            };
-            localStorage.setItem('tamenomicsSave', JSON.stringify(saveData));
-            alert('Progress saved!');
-        });
-
-        document.getElementById('loadProgressButton').addEventListener('click', () => {
-            const savedData = JSON.parse(localStorage.getItem('tamenomicsSave'));
-            if (savedData) {
-                balance = savedData.balance;
-                bankBalance = savedData.bankBalance;
-                inventory = savedData.inventory;
-                updateBalanceDisplay();
-                alert('Progress loaded!');
-            } else {
-                alert('No saved progress found!');
+        // Buying and Selling Logic
+        document.getElementById('buyRifleButton').addEventListener('click', () => {
+            if (balance < 50) {
+                alert('Not enough Zenas to buy a Rifle!');
+                return;
             }
+            balance -= 50;
+            inventory['Rifle'] += 1;
+            updateBalanceDisplay();
+            document.getElementById('shopMessage').innerText = 'You bought a Rifle!';
         });
 
-        // Initial update
+        document.getElementById('buyFishingRodButton').addEventListener('click', () => {
+            if (balance < 30) {
+                alert('Not enough Zenas to buy a Fishing Rod!');
+                return;
+            }
+            balance -= 30;
+            inventory['Fishing Rod'] += 1;
+            updateBalanceDisplay();
+            document.getElementById('shopMessage').innerText = 'You bought a Fishing Rod!';
+        });
+
+        document.getElementById('sellAnimalButton').addEventListener('click', () => {
+            const animals = Object.keys(inventory['Animals']);
+            if (animals.length === 0) {
+                alert('You have no animals to sell!');
+                return;
+            }
+            const animalToSell = animals[0]; // Example: sell the first animal
+            const sellAmount = inventory['Animals'][animalToSell];
+            balance += sellAmount * 10; // Assuming each animal sells for Zenas $10
+            inventory['Animals'][animalToSell] = 0; // Remove animal from inventory
+            updateBalanceDisplay();
+            document.getElementById('shopMessage').innerText = `You sold ${animalToSell} for Zenas ${sellAmount * 10}!`;
+        });
+
+        document.getElementById('sellFishButton').addEventListener('click', () => {
+            const fish = Object.keys(inventory['Fish']);
+            if (fish.length === 0) {
+                alert('You have no fish to sell!');
+                return;
+            }
+            const fishToSell = fish[0]; // Example: sell the first fish
+            const sellAmount = inventory['Fish'][fishToSell];
+            balance += sellAmount * 10; // Assuming each fish sells for Zenas $10
+            inventory['Fish'][fishToSell] = 0; // Remove fish from inventory
+            updateBalanceDisplay();
+            document.getElementById('shopMessage').innerText = `You sold ${fishToSell} for Zenas ${sellAmount * 10}!`;
+        });
+
+        document.getElementById('depositButton').addEventListener('click', () => {
+            const amountToDeposit = prompt('Enter amount to deposit:');
+            const amount = parseInt(amountToDeposit);
+            if (isNaN(amount) || amount <= 0 || amount > balance) {
+                alert('Invalid deposit amount!');
+                return;
+            }
+            balance -= amount;
+            bankBalance += amount;
+            updateBalanceDisplay();
+            document.getElementById('shopMessage').innerText = `You deposited Zenas ${amount}!`;
+        });
+
+        document.getElementById('withdrawButton').addEventListener('click', () => {
+            const amountToWithdraw = prompt('Enter amount to withdraw:');
+            const amount = parseInt(amountToWithdraw);
+            if (isNaN(amount) || amount <= 0 || amount > bankBalance) {
+                alert('Invalid withdrawal amount!');
+                return;
+            }
+            bankBalance -= amount;
+            balance += amount;
+            updateBalanceDisplay();
+            document.getElementById('shopMessage').innerText = `You withdrew Zenas ${amount}!`;
+        });
+
+        // Initial display update
         updateBalanceDisplay();
     </script>
 </body>
