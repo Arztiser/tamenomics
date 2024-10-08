@@ -163,15 +163,15 @@
                 <div>
                     <h3>Buy</h3>
                     <div id="shopItems">
-                        <button id="buyRifleButton">Buy Rifle (Zenas $50)</button>
-                        <button id="buyFishingRodButton">Buy Fishing Rod (Zenas $30)</button>
+                        <button id="buyRifleButton">Rifle</button>
+                        <button id="buyFishingRodButton">Fishing Rod</button>
                     </div>
                 </div>
                 <div>
                     <h3>Sell</h3>
                     <div id="shopItems">
-                        <button id="sellAnimalButton">Sell Animal (Zenas $20)</button>
-                        <button id="sellFishButton">Sell Fish (Zenas $10)</button>
+                        <button id="sellAnimalButton">Sell Animal</button>
+                        <button id="sellFishButton">Sell Fish</button>
                     </div>
                 </div>
             </div>
@@ -185,9 +185,9 @@
                 <div class="item">Rifle x<span id="rifleCount">0</span></div>
                 <div class="item">Fishing Rod x<span id="fishingRodCount">0</span></div>
                 <h1>Animals:</h1>
-                <div class="item" id="animalCount">None</div>
+                <div id="animalInventory"></div>
                 <h1>Fish:</h1>
-                <div class="item" id="fishCount">None</div>
+                <div id="fishInventory"></div>
             </div>
         </div>
 
@@ -215,23 +215,42 @@
     <script>
         let balance = 100;
         let bankBalance = 0;
-        let inventory = { 'Rifle': 0, 'Fishing Rod': 0, 'Animals': 0, 'Fish': 0 };
-
-        let lastWorkTime = 0;
-        let lastSearchTime = 0;
-        let lastCrimeTime = 0;
-        let lastHuntTime = 0;
-        let lastFishTime = 0;
+        let inventory = { 'Rifle': 0, 'Fishing Rod': 0, 'Animals': {}, 'Fish': {} };
+        let lastHuntTime = 0; // Store last hunt time in milliseconds
+        let lastWorkTime = 0; // Store last work time in milliseconds
+        let lastFishTime = 0; // Store last fish time in milliseconds
+        let lastSearchTime = 0; // Store last search for Zenas time in milliseconds
+        let lastCrimeTime = 0; // Store last crime time in milliseconds
 
         function updateBalanceDisplay() {
+            console.log("Updating balance display...");
             document.getElementById('balance').innerText = `Balance: Zenas $${balance} | Bank: Zenas $${bankBalance} | Total: Zenas $${balance + bankBalance}`;
             document.getElementById('rifleCount').innerText = inventory['Rifle'];
             document.getElementById('fishingRodCount').innerText = inventory['Fishing Rod'];
-            document.getElementById('animalCount').innerText = inventory['Animals'] > 0 ? `Animal x ${inventory['Animals']}` : 'None';
-            document.getElementById('fishCount').innerText = inventory['Fish'] > 0 ? `Fish x ${inventory['Fish']}` : 'None';
+            updateInventoryDisplay();
+        }
+
+        function updateInventoryDisplay() {
+            const animalInventory = document.getElementById('animalInventory');
+            const fishInventory = document.getElementById('fishInventory');
+
+            // Clear previous inventory displays
+            animalInventory.innerHTML = '';
+            fishInventory.innerHTML = '';
+
+            // Update animal inventory
+            for (const animal in inventory['Animals']) {
+                animalInventory.innerHTML += `${animal} x ${inventory['Animals'][animal]}<br>`;
+            }
+
+            // Update fish inventory
+            for (const fish in inventory['Fish']) {
+                fishInventory.innerHTML += `${fish} x ${inventory['Fish'][fish]}<br>`;
+            }
         }
 
         function showTab(tabName) {
+            console.log(`Switching to tab: ${tabName}`);
             document.querySelectorAll('.content').forEach(content => {
                 content.classList.remove('active');
             });
@@ -244,204 +263,142 @@
             });
         }
 
-        // Deposit functionality
-        document.getElementById('depositButton').addEventListener('click', () => {
-            const amount = parseFloat(prompt("Enter amount to deposit:"));
-            if (amount > 0 && amount <= balance) {
-                balance -= amount;
-                bankBalance += amount;
-                updateBalanceDisplay();
-                alert(`You deposited Zenas $${amount}.`);
-            } else {
-                alert("Invalid amount.");
-            }
-        });
-
-        // Withdraw functionality
-        document.getElementById('withdrawButton').addEventListener('click', () => {
-            const amount = parseFloat(prompt("Enter amount to withdraw:"));
-            if (amount > 0 && amount <= bankBalance) {
-                bankBalance -= amount;
-                balance += amount;
-                updateBalanceDisplay();
-                alert(`You withdrew Zenas $${amount}.`);
-            } else {
-                alert("Invalid amount.");
-            }
-        });
-
+        // Example of random outcome generators
         function randomizeJob() {
-            const jobs = ["Blacksmith", "Merchant", "Miner", "Artist", "Fisherman"];
+            const jobs = ["Freelancer", "Merchant", "Miner", "Artist", "Fisherman"];
             const selectedJob = jobs[Math.floor(Math.random() * jobs.length)];
             return `You worked as a ${selectedJob} and earned Zenas 50!`;
         }
 
         function randomizePlace() {
-            const success = Math.random() < 0.7; // 70% chance of success
-            if (success) {
-                return `You went to search for Zenas and found Zenas 20!`;
-            } else {
-                return `You failed to find any Zenas.`;
-            }
+            const places = ["Forest", "Beach", "Mountains", "City", "Desert"];
+            const selectedPlace = places[Math.floor(Math.random() * places.length)];
+            return `You went to the ${selectedPlace} to search for Zenas and found Zenas 20!`;
         }
 
         function randomizeCrime() {
-            const crimes = ["Pickpocket", "Heist", "Forgery", "Smuggling", "Fraud"];
-            const success = Math.random() < 0.5; // 50% chance of success
+            const crimes = [
+                { name: "Pickpocket", reward: 50, failChance: 0.3 },
+                { name: "Heist", reward: 100, failChance: 0.5 },
+                { name: "Forgery", reward: 70, failChance: 0.4 },
+                { name: "Smuggling", reward: 90, failChance: 0.6 },
+                { name: "Fraud", reward: 120, failChance: 0.2 }
+            ];
             const selectedCrime = crimes[Math.floor(Math.random() * crimes.length)];
-            const earnedZenas = success ? 100 : 0;
-            return {
-                message: success ? `You committed a ${selectedCrime} and earned Zenas ${earnedZenas} Zenas!` : "You failed to commit a crime and earned no Zenas.",
-                earnedZenas
-            };
+            if (Math.random() < selectedCrime.failChance) {
+                return `You failed to commit a crime and earned no Zenas.`;
+            } else {
+                return `You committed ${selectedCrime.name} and earned Zenas ${selectedCrime.reward}!`;
+            }
         }
 
+        // Update hunting and fishing functions
         function randomizeHunt() {
-            const success = Math.random() < 0.6; // 60% chance of success
-            if (success) {
-                const animals = ["deer", "rabbit", "bear"];
-                const selectedAnimal = animals[Math.floor(Math.random() * animals.length)];
-                inventory['Animals'] += 1;
-                return `You hunted a ${selectedAnimal} and added it to your inventory!`;
+            const animals = [
+                { name: "Deer", failChance: 0.4 },
+                { name: "Rabbit", failChance: 0.3 },
+                { name: "Wild Boar", failChance: 0.5 },
+                { name: "Bear", failChance: 0.6 }
+            ];
+            const selectedAnimal = animals[Math.floor(Math.random() * animals.length)];
+            if (Math.random() < selectedAnimal.failChance) {
+                return `You failed to hunt and earned no Zenas.`;
             } else {
-                return "You failed to hunt and came back empty-handed.";
+                // Increase specific animal count
+                inventory['Animals'][selectedAnimal.name] = (inventory['Animals'][selectedAnimal.name] || 0) + 1;
+                return `You hunted a ${selectedAnimal.name}!`;
             }
         }
 
         function randomizeFish() {
-            const success = Math.random() < 0.6; // 60% chance of success
-            if (success) {
-                const fishTypes = ["salmon", "trout", "tuna"];
-                const selectedFish = fishTypes[Math.floor(Math.random() * fishTypes.length)];
-                inventory['Fish'] += 1;
-                return `You caught a ${selectedFish} and added it to your inventory!`;
+            const fish = [
+                { name: "Salmon", failChance: 0.3 },
+                { name: "Trout", failChance: 0.4 },
+                { name: "Tuna", failChance: 0.5 },
+                { name: "Bass", failChance: 0.2 }
+            ];
+            const selectedFish = fish[Math.floor(Math.random() * fish.length)];
+            if (Math.random() < selectedFish.failChance) {
+                return `You failed to catch any fish.`;
             } else {
-                return "You failed to catch any fish.";
+                // Increase specific fish count
+                inventory['Fish'][selectedFish.name] = (inventory['Fish'][selectedFish.name] || 0) + 1;
+                return `You caught a ${selectedFish.name}!`;
             }
         }
 
-        // Add button actions
+        // Add button actions (examples)
         document.getElementById('workButton').addEventListener('click', () => {
-            const now = Date.now();
-            if (now - lastWorkTime < 86400000) { // 24 hours in milliseconds
-                alert("You can only work once per day.");
+            const currentTime = Date.now();
+            if (currentTime - lastWorkTime < 24 * 60 * 60 * 1000) {
+                alert('You can only work once every 24 hours.');
                 return;
             }
-            lastWorkTime = now;
             const message = randomizeJob();
             balance += 50;
+            lastWorkTime = currentTime;
             updateBalanceDisplay();
             document.getElementById('economyMessage').innerText = message;
         });
 
         document.getElementById('searchZenasButton').addEventListener('click', () => {
-            const now = Date.now();
-            if (now - lastSearchTime < 1800000) { // 30 minutes in milliseconds
-                alert("You can only search once every 30 minutes.");
+            const currentTime = Date.now();
+            if (currentTime - lastSearchTime < 30 * 60 * 1000) {
+                alert('You can only search for Zenas every 30 minutes.');
                 return;
             }
-            lastSearchTime = now;
             const message = randomizePlace();
-            if (message.includes('found')) {
-                balance += 20;
-            }
+            balance += 20;
+            lastSearchTime = currentTime;
             updateBalanceDisplay();
             document.getElementById('economyMessage').innerText = message;
         });
 
         document.getElementById('crimeButton').addEventListener('click', () => {
-            const now = Date.now();
-            if (now - lastCrimeTime < 1800000) { // 30 minutes in milliseconds
-                alert("You can only commit a crime once every 30 minutes.");
+            const currentTime = Date.now();
+            if (currentTime - lastCrimeTime < 30 * 60 * 1000) {
+                alert('You can only commit a crime every 30 minutes.');
                 return;
             }
-            lastCrimeTime = now;
-            const { message, earnedZenas } = randomizeCrime();
-            balance += earnedZenas; // Update balance based on success
+            const message = randomizeCrime();
+            if (message.includes('earned')) {
+                balance += parseInt(message.match(/earned Zenas (\d+)/)[1]);
+            }
+            lastCrimeTime = currentTime;
             updateBalanceDisplay();
             document.getElementById('economyMessage').innerText = message;
         });
 
         document.getElementById('huntButton').addEventListener('click', () => {
-            const now = Date.now();
-            if (now - lastHuntTime < 3600000) { // 1 hour in milliseconds
-                alert("You can only hunt once every hour.");
+            const currentTime = Date.now();
+            if (currentTime - lastHuntTime < 60 * 60 * 1000) {
+                alert('You can only hunt once per hour.');
                 return;
             }
-            lastHuntTime = now;
             const message = randomizeHunt();
+            lastHuntTime = currentTime;
             updateBalanceDisplay();
             document.getElementById('huntResult').innerText = message;
         });
 
         document.getElementById('fishButton').addEventListener('click', () => {
-            const now = Date.now();
-            if (now - lastFishTime < 3600000) { // 1 hour in milliseconds
-                alert("You can only fish once every hour.");
+            const currentTime = Date.now();
+            if (currentTime - lastFishTime < 60 * 60 * 1000) {
+                alert('You can only fish once per hour.');
                 return;
             }
-            lastFishTime = now;
             const message = randomizeFish();
+            lastFishTime = currentTime;
             updateBalanceDisplay();
             document.getElementById('fishResult').innerText = message;
         });
 
-        // Shop functionalities
-        document.getElementById('buyRifleButton').addEventListener('click', () => {
-            if (balance >= 50) {
-                balance -= 50;
-                inventory['Rifle'] += 1;
-                updateBalanceDisplay();
-                document.getElementById('shopMessage').innerText = "You bought a Rifle!";
-            } else {
-                document.getElementById('shopMessage').innerText = "Not enough Zenas!";
-            }
-        });
-
-        document.getElementById('buyFishingRodButton').addEventListener('click', () => {
-            if (balance >= 30) {
-                balance -= 30;
-                inventory['Fishing Rod'] += 1;
-                updateBalanceDisplay();
-                document.getElementById('shopMessage').innerText = "You bought a Fishing Rod!";
-            } else {
-                document.getElementById('shopMessage').innerText = "Not enough Zenas!";
-            }
-        });
-
-        document.getElementById('sellAnimalButton').addEventListener('click', () => {
-            if (inventory['Animals'] > 0) {
-                balance += 20;
-                inventory['Animals'] -= 1;
-                updateBalanceDisplay();
-                document.getElementById('shopMessage').innerText = "You sold an Animal for Zenas 20!";
-            } else {
-                document.getElementById('shopMessage').innerText = "No Animals to sell!";
-            }
-        });
-
-        document.getElementById('sellFishButton').addEventListener('click', () => {
-            if (inventory['Fish'] > 0) {
-                balance += 10;
-                inventory['Fish'] -= 1;
-                updateBalanceDisplay();
-                document.getElementById('shopMessage').innerText = "You sold a Fish for Zenas 10!";
-            } else {
-                document.getElementById('shopMessage').innerText = "No Fish to sell!";
-            }
-        });
-
-        // Save/load functionality
+        // Save/load functionality (simulated)
         document.getElementById('saveProgressButton').addEventListener('click', () => {
             const saveData = {
                 balance,
                 bankBalance,
-                inventory,
-                lastWorkTime,
-                lastSearchTime,
-                lastCrimeTime,
-                lastHuntTime,
-                lastFishTime
+                inventory
             };
             localStorage.setItem('tamenomicsSave', JSON.stringify(saveData));
             alert('Progress saved!');
@@ -453,11 +410,6 @@
                 balance = savedData.balance;
                 bankBalance = savedData.bankBalance;
                 inventory = savedData.inventory;
-                lastWorkTime = savedData.lastWorkTime;
-                lastSearchTime = savedData.lastSearchTime;
-                lastCrimeTime = savedData.lastCrimeTime;
-                lastHuntTime = savedData.lastHuntTime;
-                lastFishTime = savedData.lastFishTime;
                 updateBalanceDisplay();
                 alert('Progress loaded!');
             } else {
