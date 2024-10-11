@@ -479,6 +479,44 @@
             document.getElementById('shopMessage').innerText = `You withdrew ${amount} Zenas`;
         });
 
+        // Save Progress
+document.getElementById('saveProgressButton').addEventListener('click', () => {
+    const gameData = {
+        balance,
+        bankBalance,
+        inventory,
+        lastHuntTime,
+        lastWorkTime,
+        lastFishTime,
+        lastSearchTime,
+        lastCrimeTime
+    };
+    localStorage.setItem('gameData', JSON.stringify(gameData));
+    alert('Progress saved successfully!');
+});
+
+// Load Progress
+document.getElementById('loadProgressButton').addEventListener('click', () => {
+    const savedData = localStorage.getItem('gameData');
+    if (!savedData) {
+        alert('No saved data found!');
+        return;
+    }
+    const gameData = JSON.parse(savedData);
+    balance = gameData.balance;
+    bankBalance = gameData.bankBalance;
+    inventory = gameData.inventory;
+    lastHuntTime = gameData.lastHuntTime;
+    lastWorkTime = gameData.lastWorkTime;
+    lastFishTime = gameData.lastFishTime;
+    lastSearchTime = gameData.lastSearchTime;
+    lastCrimeTime = gameData.lastCrimeTime;
+
+    updateBalanceDisplay();
+    alert('Progress loaded successfully!');
+});
+
+
         // Initial display update
         updateBalanceDisplay();
     </script>
