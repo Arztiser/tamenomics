@@ -264,33 +264,49 @@
         }
 
         // Example of random outcome generators
-        function randomizeJob() {
-            const jobs = ["Freelancer", "Merchant", "Miner", "Artist", "Fisherman", "Fast Food Worker", "Banker", "Secretary", "Hunter", "Tourist Guide", "Moderator", "Engineer", "Programmer", "Teacher", "Doctor", "Scientist", "Astronaut", "Businessman", "Politician", "Surgeon", "Ringmaster", "Zookeeper", "Farmer"];
-            const selectedJob = jobs[Math.floor(Math.random() * jobs.length)];
-            return `You worked as a ${selectedJob} and earned Zenas 50!`;
-        }
+function randomizeJob() {
+    const jobs = [
+        "Freelancer", "Merchant", "Miner", "Artist", "Fisherman", "Fast Food Worker", "Banker", 
+        "Secretary", "Hunter", "Tourist Guide", "Moderator", "Engineer", "Programmer", "Teacher", 
+        "Doctor", "Scientist", "Astronaut", "Businessman", "Politician", "Surgeon", "Ringmaster", 
+        "Zookeeper", "Farmer"
+    ];
+    const selectedJob = jobs[Math.floor(Math.random() * jobs.length)];
+    // Generate random Zenas earned from 30 to 100
+    const earnedZenas = Math.floor(Math.random() * 71) + 30;
+    return `You worked as a ${selectedJob} and earned Zenas ${earnedZenas}!`;
+}
 
-        function randomizePlace() {
-            const places = ["Forest", "Beach", "Mountains", "City", "Desert", "Shop", "Park", "Library", "Mall", "Bank", "Cafe", "Theater", "Restaurant"];
-            const selectedPlace = places[Math.floor(Math.random() * places.length)];
-            return `You went to the ${selectedPlace} to search for Zenas and found Zenas 20!`;
-        }
+function randomizePlace() {
+    const places = [
+        "Forest", "Beach", "Mountains", "City", "Desert", "Shop", "Park", "Library", "Mall", 
+        "Bank", "Cafe", "Theater", "Restaurant"
+    ];
+    const selectedPlace = places[Math.floor(Math.random() * places.length)];
+    // Generate random Zenas found from 10 to 50
+    const foundZenas = Math.floor(Math.random() * 41) + 10;
+    return `You went to the ${selectedPlace} to search for Zenas and found Zenas ${foundZenas}!`;
+}
 
-        function randomizeCrime() {
-            const crimes = [
-                { name: "Pickpocket", reward: 50, failChance: 0.3 },
-                { name: "Heist", reward: 100, failChance: 0.5 },
-                { name: "Forgery", reward: 70, failChance: 0.4 },
-                { name: "Smuggling", reward: 90, failChance: 0.6 },
-                { name: "Fraud", reward: 120, failChance: 0.2 }
-            ];
-            const selectedCrime = crimes[Math.floor(Math.random() * crimes.length)];
-            if (Math.random() < selectedCrime.failChance) {
-                return `You failed to commit a crime and earned no Zenas.`;
-            } else {
-                return `You committed ${selectedCrime.name} and earned Zenas ${selectedCrime.reward}!`;
-            }
-        }
+function randomizeCrime() {
+    const crimes = [
+        { name: "Pickpocket", minReward: 30, maxReward: 80, failChance: 0.3 },
+        { name: "Heist", minReward: 80, maxReward: 150, failChance: 0.5 },
+        { name: "Forgery", minReward: 50, maxReward: 100, failChance: 0.4 },
+        { name: "Smuggling", minReward: 70, maxReward: 120, failChance: 0.6 },
+        { name: "Fraud", minReward: 100, maxReward: 200, failChance: 0.2 }
+    ];
+    const selectedCrime = crimes[Math.floor(Math.random() * crimes.length)];
+    // Check if the crime fails
+    if (Math.random() < selectedCrime.failChance) {
+        return `You failed to commit ${selectedCrime.name} and earned no Zenas.`;
+    } else {
+        // Generate random Zenas earned from minReward to maxReward
+        const earnedZenas = Math.floor(Math.random() * (selectedCrime.maxReward - selectedCrime.minReward + 1)) + selectedCrime.minReward;
+        return `You committed ${selectedCrime.name} and earned Zenas ${earnedZenas}!`;
+    }
+}
+
 
         // Update hunting and fishing functions
         function randomizeHunt() {
