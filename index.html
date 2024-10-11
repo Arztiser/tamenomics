@@ -163,8 +163,8 @@
                 <div>
                     <h3>Buy</h3>
                     <div id="shopItems">
-                        <button id="buyRifleButton">Rifle (Cost: Zenas $50)</button>
-                        <button id="buyFishingRodButton">Fishing Rod (Cost: Zenas $30)</button>
+                        <button id="buyRifleButton">Rifle</button>
+                        <button id="buyFishingRodButton">Fishing Rod</button>
                     </div>
                 </div>
                 <div>
@@ -297,12 +297,16 @@
             const animals = [
                 { name: "Deer", failChance: 0.4 },
                 { name: "Rabbit", failChance: 0.3 },
-                { name: "Wild Boar", failChance: 0.5 },
-                { name: "Bear", failChance: 0.6 }
+                { name: "Boar", failChance: 0.5 },
+                { name: "Bear", failChance: 0.6 },
+                { name: "Armadillo", failChance: 0.7 },
+                { name: "Duck", failChance: 0.5 },
+                { name: "Skunk", failChance: 0.2 },
+                { name: "Moose", failChance: 0.7}
             ];
             const selectedAnimal = animals[Math.floor(Math.random() * animals.length)];
             if (Math.random() < selectedAnimal.failChance) {
-                return `You failed to hunt and earned no Zenas.`;
+                return `You failed to hunt any animals`;
             } else {
                 // Increase specific animal count
                 inventory['Animals'][selectedAnimal.name] = (inventory['Animals'][selectedAnimal.name] || 0) + 1;
@@ -315,7 +319,12 @@
                 { name: "Salmon", failChance: 0.3 },
                 { name: "Trout", failChance: 0.4 },
                 { name: "Tuna", failChance: 0.5 },
-                { name: "Bass", failChance: 0.2 }
+                { name: "Bass", failChance: 0.2 },
+                { name: "Crab", failChance: 0.6 },
+                { name: "Otter", failChance: 0.5 },
+                { name: "Tropical Fish", failChance: 0.4 },
+                { name: "Boot", failChance: 0.1 },
+                { name: "Pufferfish", failChance: 0.6 }
             ];
             const selectedFish = fish[Math.floor(Math.random() * fish.length)];
             if (Math.random() < selectedFish.failChance) {
@@ -427,7 +436,7 @@
             balance += sellAmount * 10; // Assuming each animal sells for Zenas $10
             inventory['Animals'][animalToSell] = 0; // Remove animal from inventory
             updateBalanceDisplay();
-            document.getElementById('shopMessage').innerText = `You sold ${animalToSell} for Zenas ${sellAmount * 10}!`;
+            document.getElementById('shopMessage').innerText = `You sold ${animalToSell} for {sellAmount * 10} Zenas`;
         });
 
         document.getElementById('sellFishButton').addEventListener('click', () => {
@@ -441,7 +450,7 @@
             balance += sellAmount * 10; // Assuming each fish sells for Zenas $10
             inventory['Fish'][fishToSell] = 0; // Remove fish from inventory
             updateBalanceDisplay();
-            document.getElementById('shopMessage').innerText = `You sold ${fishToSell} for Zenas ${sellAmount * 10}!`;
+            document.getElementById('shopMessage').innerText = `You sold ${fishToSell} for {sellAmount * 10} Zenas`;
         });
 
         document.getElementById('depositButton').addEventListener('click', () => {
@@ -454,7 +463,7 @@
             balance -= amount;
             bankBalance += amount;
             updateBalanceDisplay();
-            document.getElementById('shopMessage').innerText = `You deposited Zenas ${amount}!`;
+            document.getElementById('shopMessage').innerText = `You deposited ${amount} Zenas`;
         });
 
         document.getElementById('withdrawButton').addEventListener('click', () => {
@@ -467,7 +476,7 @@
             bankBalance -= amount;
             balance += amount;
             updateBalanceDisplay();
-            document.getElementById('shopMessage').innerText = `You withdrew Zenas ${amount}!`;
+            document.getElementById('shopMessage').innerText = `You withdrew ${amount} Zenas`;
         });
 
         // Initial display update
