@@ -265,13 +265,13 @@
 
         // Example of random outcome generators
         function randomizeJob() {
-            const jobs = ["Freelancer", "Merchant", "Miner", "Artist", "Fisherman"];
+            const jobs = ["Freelancer", "Merchant", "Miner", "Artist", "Fisherman", "Fast Food Worker", "Banker", "Secretary", "Hunter", "Tourist Guide", "Moderator", "Engineer", "Programmer", "Teacher", "Doctor", "Scientist", "Astronaut", "Businessman", "Politician", "Surgeon", "Ringmaster", "Zookeeper", "Farmer"];
             const selectedJob = jobs[Math.floor(Math.random() * jobs.length)];
             return `You worked as a ${selectedJob} and earned Zenas 50!`;
         }
 
         function randomizePlace() {
-            const places = ["Forest", "Beach", "Mountains", "City", "Desert"];
+            const places = ["Forest", "Beach", "Mountains", "City", "Desert", "Shop", "Park", "Library", "Mall", "Bank", "Cafe", "Theater", "Restaurant"];
             const selectedPlace = places[Math.floor(Math.random() * places.length)];
             return `You went to the ${selectedPlace} to search for Zenas and found Zenas 20!`;
         }
