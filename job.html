@@ -1,12 +1,13 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#2c9118" />
-  <meta name="description" content="Get A Job - Tamenomics Discord Bot Economy" />
+  <meta name="description" content="Jobs - Tamenomics Discord Bot Economy" />
   <title>Jobs - Tamenomics</title>
   <link rel="icon" href="./img/pfp.png" />
-  <link href="https://fonts.googleapis.com/css2?family=Jersey+10:wght@100;300;400;500;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet" />
   <style>
     body {
       font-family: 'Jersey 10', sans-serif;
@@ -28,10 +29,12 @@
       font-weight: 700;
       font-size: 28px;
       cursor: pointer;
+      user-select: none;
     }
     .menu-icon {
       font-size: 30px;
       cursor: pointer;
+      user-select: none;
     }
     .topnav-right {
       display: none;
@@ -55,12 +58,14 @@
       background: none;
       color: white;
       padding: 14px;
+      text-align: left;
       font-size: 24px;
       border: none;
       outline: none;
       cursor: pointer;
       width: 100%;
       font-family: 'Jersey 10', sans-serif;
+      user-select: none;
     }
     .accordion-content {
       display: none;
@@ -73,9 +78,7 @@
       font-size: 20px;
       color: white;
       text-decoration: none;
-    }
-    .accordion-content a:hover {
-      background: #146f0e;
+      user-select: none;
     }
     .accordion-section {
       display: flex;
@@ -100,22 +103,23 @@
     button {
       font-family: 'Jersey 10', sans-serif;
       font-size: 20px;
-      padding: 10px 20px;
-      background: #2c9118;
+      padding: 10px 16px;
+      margin: 8px;
+      background-color: #2c9118;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      margin-top: 10px;
     }
-    button:hover {
-      background: #238110;
+    .message {
+      margin-top: 16px;
+      font-size: 20px;
     }
-    .job-option {
-      margin-bottom: 20px;
-      padding: 12px;
-      border: 2px solid #2c9118;
-      border-radius: 8px;
+    .job {
+      margin: 10px 0;
+      padding: 10px;
+      background: #e7ffe7;
+      border-left: 4px solid #2c9118;
     }
   </style>
 </head>
@@ -144,97 +148,110 @@
         </div>
       </div>
     </nav>
-  </header>  <main>
+  </header>
+
+  <main>
     <h2>Job Center</h2>
     <div id="job-section"></div>
-    <button id="work-btn" style="display:none">Work Today</button>
-    <button id="quit-btn" style="display:none">Quit Job</button>
-  </main>  <script>
-    const jobs = [
-      'Janitor', 'Cashier', 'Lawn Mower', 'Barista', 'Mechanic', 'Delivery Driver',
-      'Receptionist', 'Dishwasher', 'Tutor', 'Fast Food Worker'
-    ];
-    const jobSection = document.getElementById('job-section');
-    const workBtn = document.getElementById('work-btn');
-    const quitBtn = document.getElementById('quit-btn');
+    <button onclick="getPaid()">Claim Daily Pay</button>
+    <button onclick="quitJob()">Quit Job</button>
+    <div class="message" id="message"></div>
+  </main>
 
-    let user = JSON.parse(localStorage.getItem('tamoUser')) || {
-      job: null,
-      lastWorked: 0,
-      cash: 0
-    };
+  <script>
+    const jobs = ["Janitor", "Fast Food Cook", "Lawn Mower", "Grocery Clerk", "Street Musician", "Dog Walker"];
+    const pay = 50;
+    let currentJob = localStorage.getItem("job") || null;
+    let cash = parseInt(localStorage.getItem("cash") || 0);
+    let lastPaid = parseInt(localStorage.getItem("lastPaid") || 0);
+    const message = document.getElementById("message");
+    const jobSection = document.getElementById("job-section");
 
-    function saveUser() {
-      localStorage.setItem('tamoUser', JSON.stringify(user));
+    function save() {
+      localStorage.setItem("job", currentJob);
+      localStorage.setItem("cash", cash);
     }
 
     function renderJobs() {
       jobSection.innerHTML = '';
-      if (user.job) {
-        jobSection.innerHTML = `<p>You Are Currently Working As A <strong>${user.job}</strong>. Daily Pay: $50</p>`;
-        workBtn.style.display = 'block';
-        quitBtn.style.display = 'block';
-      } else {
-        const options = [];
-        while (options.length < 3) {
-          const job = jobs[Math.floor(Math.random() * jobs.length)];
-          if (!options.includes(job)) options.push(job);
-        }
-        options.forEach(job => {
-          const chance = Math.floor(Math.random() * 31) + 70;
-          const div = document.createElement('div');
-          div.className = 'job-option';
-          div.innerHTML = `<strong>${job}</strong><br>Pay: $50/day<br>Chance Of Getting Accepted: ${chance}%<br><button onclick="applyJob('${job}', ${chance})">Apply</button>`;
-          jobSection.appendChild(div);
-        });
+      if (currentJob) {
+        jobSection.innerHTML = `<div class="job"><strong>Your Job:</strong> ${currentJob}</div>`;
+        return;
       }
+
+      const offers = [];
+      while (offers.length < 3) {
+        const job = jobs[Math.floor(Math.random() * jobs.length)];
+        if (!offers.includes(job)) offers.push(job);
+      }
+
+      offers.forEach(job => {
+        const chance = Math.floor(Math.random() * 100) + 1;
+        const div = document.createElement("div");
+        div.className = "job";
+        div.innerHTML = `
+          <strong>${job}</strong><br>
+          Pay: $${pay}/day<br>
+          Acceptance Chance: ${chance}%<br>
+          <button onclick="applyJob('${job}', ${chance})">Apply</button>
+        `;
+        jobSection.appendChild(div);
+      });
     }
 
     function applyJob(job, chance) {
-      if (user.job) {
-        alert('You Must Quit Your Current Job First!');
+      if (currentJob) {
+        message.textContent = "You Already Have A Job. Quit First.";
         return;
       }
-      if (Math.random() * 100 <= chance) {
-        user.job = job;
-        saveUser();
+      if (Math.random() * 100 < chance) {
+        currentJob = job;
+        lastPaid = Date.now();
+        localStorage.setItem("lastPaid", lastPaid);
+        message.textContent = `You Got The Job As A ${job}!`;
+        save();
         renderJobs();
-        alert(`Congratulations! You Got The Job As A ${job}!`);
       } else {
-        alert('You Were Not Accepted For The Job. Try Again.');
+        message.textContent = `You Didn't Get The ${job} Job.`;
+      }
+    }
+
+    function getPaid() {
+      if (!currentJob) {
+        message.textContent = "You Don't Have A Job.";
+        return;
+      }
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      if (now - lastPaid >= oneDay) {
+        cash += pay;
+        lastPaid = now;
+        localStorage.setItem("lastPaid", lastPaid);
+        save();
+        message.textContent = `You Earned $${pay} From Your Job As A ${currentJob}.`;
+      } else {
+        const hrsLeft = Math.ceil((oneDay - (now - lastPaid)) / (60 * 60 * 1000));
+        message.textContent = `You Can Only Get Paid Once Every 24 Hours. Come Back In ${hrsLeft} Hour(s).`;
       }
     }
 
     function quitJob() {
-      user.job = null;
-      saveUser();
-      renderJobs();
-    }
-
-    function workToday() {
-      const now = Date.now();
-      const dayMs = 24 * 60 * 60 * 1000;
-      if (now - user.lastWorked < dayMs) {
-        const timeLeft = dayMs - (now - user.lastWorked);
-        const hrs = Math.floor(timeLeft / 3600000);
-        const mins = Math.floor((timeLeft % 3600000) / 60000);
-        alert(`You Can Work Again In ${hrs}h ${mins}m.`);
+      if (!currentJob) {
+        message.textContent = "You Don't Have A Job.";
         return;
       }
-      user.lastWorked = now;
-      user.cash += 50;
-      saveUser();
-      alert('You Earned $50 Today!');
+      currentJob = null;
+      save();
+      message.textContent = "You Quit Your Job.";
+      renderJobs();
     }
-
-    workBtn.onclick = workToday;
-    quitBtn.onclick = quitJob;
 
     function toggleMenu() {
       document.querySelector('header').classList.toggle('active');
       document.querySelector('.topnav-right').classList.toggle('active');
       document.body.classList.toggle('menu-open');
     }
+
     document.querySelectorAll('.accordion-toggle').forEach(btn =>
       btn.addEventListener('click', () => {
         const section = btn.parentElement;
@@ -246,5 +263,6 @@
     );
 
     renderJobs();
-  </script></body>
+  </script>
+</body>
 </html>
