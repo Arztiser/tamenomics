@@ -4,127 +4,222 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bank</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10:wght@100;300;400;500;700;900&display=swap" />
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f8f0;
+      font-family: 'Jersey 10', sans-serif;
+      background: #e6f2e6;
       color: #2c9118;
-      margin: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    .bank-container {
-      max-width: 500px;
-      margin: auto;
-      padding: 20px;
+    header {
+      background-color: #2c9118;
+      padding: 15px 30px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
+    header nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    header nav a:hover {
+      color: #d4f2d4;
+    }
+    main.bank-container {
       background: white;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #2c9118aa;
+      max-width: 480px;
+      margin: 30px auto 60px;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgb(44 145 24 / 0.3);
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    h1 {
+    main.bank-container h1 {
+      margin-bottom: 30px;
+      font-weight: 900;
+      font-size: 36px;
+      letter-spacing: 1px;
       text-align: center;
+      color: #2c9118;
     }
-    .balance {
-      font-size: 24px;
-      margin-bottom: 20px;
+    .balances {
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 30px;
+      font-size: 22px;
+      font-weight: 600;
+    }
+    .balances div {
+      background: #daf1da;
+      padding: 12px 25px;
+      border-radius: 8px;
+      box-shadow: inset 0 0 10px #b7d5b7;
+      min-width: 180px;
       text-align: center;
     }
     input[type="number"] {
-      width: 80%;
-      padding: 10px;
-      font-size: 18px;
+      font-family: 'Jersey 10', sans-serif;
+      width: 100%;
+      padding: 15px;
+      font-size: 22px;
       border: 2px solid #2c9118;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      box-sizing: border-box;
+      font-weight: 500;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      gap: 20px;
     }
     button {
+      flex: 1;
       background-color: #2c9118;
       border: none;
       color: white;
-      padding: 10px 25px;
-      font-size: 18px;
-      border-radius: 6px;
+      padding: 15px 0;
+      font-family: 'Jersey 10', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      border-radius: 10px;
       cursor: pointer;
-      margin: 5px;
-      width: 45%;
-      display: inline-block;
+      transition: background-color 0.3s;
+      user-select: none;
     }
-    button:hover {
+    button:disabled {
+      background-color: #88b088;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
       background-color: #237b14;
     }
     .message {
+      margin-top: 25px;
+      font-weight: 700;
+      font-size: 20px;
+      height: 24px;
       text-align: center;
-      margin-top: 15px;
-      font-weight: bold;
+    }
+    footer {
+      background-color: #2c9118;
+      color: white;
+      padding: 12px 20px;
+      text-align: center;
+      font-weight: 500;
+      letter-spacing: 1px;
+      font-size: 16px;
+      margin-top: auto;
     }
   </style>
 </head>
 <body>
-  <div class="bank-container">
+  <header>
+    Bank
+    <nav>
+      <a href="/">Home</a>
+      <a href="/casino.html">Casino</a>
+      <a href="/shop.html">Shop</a>
+      <a href="/inventory.html">Inventory</a>
+    </nav>
+  </header>
+
+  <main class="bank-container">
     <h1>Bank</h1>
-    <div class="balance" id="balance-display">Bank Balance: $0</div>
+    <div class="balances">
+      <div>Cash: $<span id="cash-balance">0</span></div>
+      <div>Bank: $<span id="bank-balance">0</span></div>
+    </div>
     <input type="number" id="amount" placeholder="Enter amount" min="1" />
-    <div style="text-align:center;">
-      <button onclick="deposit()">Deposit</button>
-      <button onclick="withdraw()">Withdraw</button>
+    <div class="btn-group">
+      <button id="deposit-btn" onclick="deposit()">Deposit</button>
+      <button id="withdraw-btn" onclick="withdraw()">Withdraw</button>
     </div>
     <div class="message" id="message"></div>
-  </div>
+  </main>
+
+  <footer>
+    © 2025 Tamenomics — All Rights Reserved
+  </footer>
 
   <script>
-    // Dummy variables for now
-    let bankBalance = 1000;
-    let cashBalance = 500;
+    let cashBalance = 0;
+    let bankBalance = 0;
 
-    function updateBalance() {
-      document.getElementById('balance-display').innerText = `Bank Balance: $${bankBalance}`;
+    const cashEl = document.getElementById('cash-balance');
+    const bankEl = document.getElementById('bank-balance');
+    const messageEl = document.getElementById('message');
+    const amountInput = document.getElementById('amount');
+    const depositBtn = document.getElementById('deposit-btn');
+    const withdrawBtn = document.getElementById('withdraw-btn');
+
+    function updateBalances() {
+      cashEl.textContent = cashBalance;
+      bankEl.textContent = bankBalance;
+      messageEl.textContent = '';
+      checkButtons();
     }
 
-    function showMessage(msg, isError = false) {
-      const messageEl = document.getElementById('message');
-      messageEl.style.color = isError ? 'red' : 'green';
-      messageEl.innerText = msg;
-      setTimeout(() => { messageEl.innerText = ''; }, 3000);
+    function showMessage(text, isError = false) {
+      messageEl.style.color = isError ? 'crimson' : '#2c9118';
+      messageEl.textContent = text;
+      setTimeout(() => {
+        messageEl.textContent = '';
+      }, 3500);
     }
+
+    function checkButtons() {
+      const amount = Number(amountInput.value);
+      depositBtn.disabled = !amount || amount < 1 || amount > cashBalance;
+      withdrawBtn.disabled = !amount || amount < 1 || amount > bankBalance;
+    }
+
+    amountInput.addEventListener('input', checkButtons);
 
     function deposit() {
-      const amountInput = document.getElementById('amount');
       const amount = Number(amountInput.value);
-      if (amount <= 0 || isNaN(amount)) {
-        showMessage('Please enter a valid amount.', true);
-        return;
-      }
-      if (amount > cashBalance) {
-        showMessage("You don't have enough cash to deposit.", true);
+      if (amount < 1 || amount > cashBalance) {
+        showMessage("Invalid deposit amount.", true);
         return;
       }
       cashBalance -= amount;
       bankBalance += amount;
-      updateBalance();
-      showMessage(`Deposited $${amount} successfully.`);
+      updateBalances();
       amountInput.value = '';
+      showMessage(`Successfully deposited $${amount}.`);
     }
 
     function withdraw() {
-      const amountInput = document.getElementById('amount');
       const amount = Number(amountInput.value);
-      if (amount <= 0 || isNaN(amount)) {
-        showMessage('Please enter a valid amount.', true);
-        return;
-      }
-      if (amount > bankBalance) {
-        showMessage("You don't have enough money in the bank.", true);
+      if (amount < 1 || amount > bankBalance) {
+        showMessage("Invalid withdrawal amount.", true);
         return;
       }
       bankBalance -= amount;
       cashBalance += amount;
-      updateBalance();
-      showMessage(`Withdrew $${amount} successfully.`);
+      updateBalances();
       amountInput.value = '';
+      showMessage(`Successfully withdrew $${amount}.`);
     }
 
-    updateBalance();
+    // Initialize
+    updateBalances();
   </script>
 </body>
 </html>
