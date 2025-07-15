@@ -1,320 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="theme-color" content="#2c9118" />
-<meta name="description" content="Fish at various locations and catch random fish to add to your inventory on Tamenomics." />
-<title>Fishing - Tamenomics</title>
-<link href="https://fonts.googleapis.com/css2?family=Jersey+10:wght@100;300;400;500;700;900&display=swap" rel="stylesheet" />
-<style>
-  body {
-    font-family: 'Jersey 10', sans-serif;
-    background: #fafafa;
-    margin: 0;
-    padding: 0;
-    color: #2c9118;
-    font-size: 18px;
-  }
-
-  header {
-    background-color: #2c9118;
-    color: white;
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  header h1 {
-    margin: 0;
-    font-weight: 700;
-    font-size: 24px;
-  }
-
-  header .menu-icon {
-    font-size: 28px;
-    cursor: pointer;
-  }
-
-  .topnav-right {
-    display: none;
-    position: fixed;
-    top: 52px;
-    right: 0;
-    background-color: #2c9118;
-    width: 100%;
-    height: calc(100vh - 52px);
-    flex-direction: column;
-    overflow-y: auto;
-    z-index: 999;
-    color: white;
-  }
-
-  header.active + .topnav-right,
-  .topnav-right.active {
-    display: flex;
-  }
-
-  .accordion-section {
-    border-top: 1px solid #1a5f0d;
-  }
-
-  .accordion-toggle {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 24px;
-    padding: 14px 20px;
-    text-align: left;
-    width: 100%;
-    cursor: pointer;
-    font-family: 'Jersey 10', sans-serif;
-  }
-
-  .accordion-toggle:hover {
-    background-color: #1a5f0d;
-  }
-
-  .accordion-section.open .accordion-content {
-    display: flex;
-  }
-
-  .accordion-content {
-    display: none;
-    flex-direction: column;
-    background-color: #166f0f;
-  }
-
-  .accordion-content a {
-    color: white;
-    text-decoration: none;
-    font-size: 20px;
-    padding: 12px 32px;
-    border-top: 1px solid #125e0c;
-  }
-
-  .accordion-content a:hover {
-    background-color: #125e0c;
-  }
-
-  main {
-    max-width: 640px;
-    margin: 30px auto;
-    padding: 0 20px;
-  }
-
-  h2 {
-    font-weight: 700;
-    font-size: 32px;
-    margin-bottom: 25px;
-    color: #2c9118;
-  }
-
-  .info {
-    background-color: #d9f2d8;
-    border: 2px solid #2c9118;
-    border-radius: 8px;
-    padding: 12px 20px;
-    margin-bottom: 20px;
-  }
-
-  label {
-    font-weight: 500;
-    font-size: 20px;
-  }
-
-  select {
-    font-family: 'Jersey 10', sans-serif;
-    font-size: 20px;
-    padding: 10px 16px;
-    margin-left: 12px;
-    border: 2px solid #2c9118;
-    border-radius: 8px;
-    cursor: pointer;
-    color: #2c9118;
-    background-color: white;
-  }
-
-  button {
-    font-family: 'Jersey 10', sans-serif;
-    font-size: 22px;
-    padding: 12px 36px;
-    background-color: #2c9118;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    margin-left: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  button:hover:enabled {
-    background-color: #247711;
-  }
-
-  button:disabled {
-    background-color: #a0c59a;
-    cursor: not-allowed;
-  }
-
-  #result {
-    margin-top: 30px;
-    font-weight: 700;
-    font-size: 24px;
-    color: #1a5f0d;
-  }
-
-  #inventory {
-    margin-top: 45px;
-    border-top: 3px solid #2c9118;
-    padding-top: 20px;
-  }
-
-  #inventory h3 {
-    font-weight: 700;
-    font-size: 28px;
-    margin-bottom: 15px;
-    color: #2c9118;
-  }
-
-  #inventory-list {
-    list-style-type: none;
-    padding-left: 0;
-    font-size: 20px;
-  }
-</style>
-</head>
-<body>
-
-<header>
-  <h1>Tamenomics</h1>
-  <span class="menu-icon" onclick="toggleMenu()">&#9776;</span>
-</header>
-<nav class="topnav-right">
-  <div class="accordion-section">
-    <button class="accordion-toggle">Actions</button>
-    <div class="accordion-content">
-      <a href="hunt.html">Hunt</a>
-      <a href="fish.html" style="background:#125e0c;">Fish</a>
-      <a href="crime.html">Crime</a>
-      <a href="search.html">Search</a>
-    </div>
-  </div>
-  <div class="accordion-section">
-    <button class="accordion-toggle">Economy</button>
-    <div class="accordion-content">
-      <a href="bank.html">Bank</a>
-      <a href="shop.html">Shop</a>
-      <a href="sell.html">Sell</a>
-      <a href="jobs.html">Jobs</a>
-      <a href="casino.html">Casino</a>
-    </div>
-  </div>
-</nav>
-
-<main>
-  <h2>Fishing</h2>
-  <div class="info">
-    <p><strong>Important:</strong> You need a <strong>Fishing Rod</strong> in your inventory to fish.</p>
-    <p>You can fish once every <strong>30 minutes</strong>.</p>
-  </div>
-
-  <label for="location">Choose Your Fishing Location:</label>
-  <select id="location" aria-label="Fishing Location">
-    <option value="river">River</option>
-    <option value="lake">Lake</option>
-    <option value="ocean">Ocean</option>
-  </select>
-  <button id="fish-btn" onclick="attemptFish()">Fish</button>
-
-  <div id="result"></div>
-
-  <section id="inventory">
-    <h3>Your Fish Inventory</h3>
-    <ul id="inventory-list"></ul>
-  </section>
-</main>
-
-<script>
-  const inventoryKey = 'tamenomics_inventory';
-  const lastFishKey = 'tamenomics_last_fish';
-
-  const fishTypes = {
-    river: ['Trout', 'Catfish', 'Bass'],
-    lake: ['Perch', 'Pike', 'Bluegill'],
-    ocean: ['Salmon', 'Tuna', 'Mackerel']
-  };
-
-  function loadInventory() {
-    const raw = localStorage.getItem(inventoryKey);
-    return raw ? JSON.parse(raw) : { 'Fishing Rod': 1 };
-  }
-
-  function saveInventory(inv) {
-    localStorage.setItem(inventoryKey, JSON.stringify(inv));
-  }
-
-  function canFish() {
-    const last = localStorage.getItem(lastFishKey);
-    if (!last) return true;
-    const lastTime = new Date(parseInt(last, 10));
-    const now = new Date();
-    const diff = (now - lastTime) / 1000 / 60; // minutes
-    return diff >= 30;
-  }
-
-  function updateInventoryUI() {
-    const inv = loadInventory();
-    const list = document.getElementById('inventory-list');
-    list.innerHTML = '';
-    for (const [item, qty] of Object.entries(inv)) {
-      if (qty > 0 && item !== 'Fishing Rod') {
-        const li = document.createElement('li');
-        li.textContent = `${item}: ${qty}`;
-        list.appendChild(li);
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#2c9118" />
+  <meta name="description" content="Fish at various locations and catch random fish - Tamenomics Discord Bot Economy" />
+  <title>Fish - Tamenomics</title>
+  <link rel="icon" href="./img/pfp.png" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Jersey+10:wght@100;300;400;500;700;900&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      font-family: 'Jersey 10', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      color: #2c9118;
+    }
+    header {
+      background-color: #2c9118;
+      padding: 12px 16px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 28px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .menu-icon {
+      font-size: 30px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .topnav-right {
+      display: none;
+      position: fixed;
+      top: 56px;
+      right: 0;
+      background-color: #2c9118;
+      width: 100%;
+      height: 100vh;
+      flex-direction: column;
+      z-index: 999;
+      overflow-y: auto;
+    }
+    .topnav.active .topnav-right {
+      display: flex;
+    }
+    body.menu-open {
+      overflow: hidden;
+    }
+    .accordion-toggle {
+      background: none;
+      color: white;
+      padding: 14px;
+      text-align: left;
+      font-size: 24px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      width: 100%;
+      font-family: 'Jersey 10', sans-serif;
+      user-select: none;
+    }
+    .accordion-content {
+      display: none;
+      flex-direction: column;
+      background-color: #1e6f12;
+    }
+    .accordion-content a {
+      padding: 12px 28px;
+      border-top: 1px solid #146f0e;
+      font-size: 20px;
+      color: white;
+      text-decoration: none;
+      user-select: none;
+    }
+    .accordion-content a:hover {
+      background: #146f0e;
+    }
+    .accordion-section {
+      display: flex;
+      flex-direction: column;
+      border-top: 1px solid #1e6f12;
+    }
+    .accordion-section.open .accordion-content {
+      display: flex;
+    }
+    main {
+      max-width: 600px;
+      margin: 24px auto;
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 0 10px rgba(44, 145, 24, 0.3);
+    }
+    h2 {
+      font-weight: 700;
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #2c9118;
+      user-select: none;
+    }
+    label {
+      font-weight: 600;
+      font-size: 20px;
+      display: block;
+      margin-bottom: 12px;
+      user-select: none;
+    }
+    select {
+      width: 100%;
+      font-family: 'Jersey 10', sans-serif;
+      font-size: 20px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 2px solid #2c9118;
+      margin-bottom: 20px;
+    }
+    button {
+      font-family: 'Jersey 10', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      background: #2c9118;
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+      width: 100%;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #238110;
+    }
+    .message {
+      margin-top: 18px;
+      font-size: 20px;
+      font-weight: 600;
+      min-height: 40px;
+      user-select: none;
+    }
+    .inventory {
+      margin-top: 30px;
+      font-size: 20px;
+      border-top: 2px solid #2c9118;
+      padding-top: 12px;
+      user-select: none;
+    }
+    @media (max-width: 640px) {
+      main {
+        margin: 16px 10px;
+        padding: 16px;
+      }
+      h2 {
+        font-size: 26px;
+      }
+      select, button {
+        font-size: 20px;
       }
     }
-  }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 onclick="location.href='/'">Tamenomics</h1>
+    <span class="menu-icon" onclick="toggleMenu()">&#9776;</span>
+    <nav class="topnav-right">
+      <div class="accordion-section">
+        <button class="accordion-toggle">Actions</button>
+        <div class="accordion-content">
+          <a href="hunt.html">Hunt</a>
+          <a href="fish.html" class="active">Fish</a>
+          <a href="crime.html">Crime</a>
+          <a href="search.html">Search</a>
+        </div>
+      </div>
+      <div class="accordion-section">
+        <button class="accordion-toggle">Economy</button>
+        <div class="accordion-content">
+          <a href="bank.html">Bank</a>
+          <a href="casino.html">Casino</a>
+          <a href="jobs.html">Jobs</a>
+          <a href="shop.html">Shop</a>
+          <a href="sell.html">Sell</a>
+        </div>
+      </div>
+    </nav>
+  </header>
 
-  function attemptFish() {
-    const inv = loadInventory();
-    if (!inv['Fishing Rod'] || inv['Fishing Rod'] < 1) {
-      alert('You need a Fishing Rod to fish!');
-      return;
-    }
-    if (!canFish()) {
-      alert('You can only fish once every 30 minutes.');
-      return;
-    }
-    const location = document.getElementById('location').value;
-    const fishList = fishTypes[location];
-    const caughtFish = fishList[Math.floor(Math.random() * fishList.length)];
-    inv[caughtFish] = (inv[caughtFish] || 0) + 1;
-    saveInventory(inv);
-    localStorage.setItem(lastFishKey, Date.now().toString());
-    document.getElementById('result').textContent = `You caught a ${caughtFish}! 🎣`;
-    updateInventoryUI();
-  }
+  <main>
+    <h2>Fish</h2>
+    <label for="location-select">Choose Your Fishing Location</label>
+    <select id="location-select">
+      <option value="river">River</option>
+      <option value="lake">Lake</option>
+      <option value="ocean">Ocean</option>
+    </select>
 
-  function toggleMenu() {
-    document.querySelector('header').classList.toggle('active');
-    document.querySelector('.topnav-right').classList.toggle('active');
-    document.body.classList.toggle('menu-open');
-  }
+    <button id="fish-btn">Go Fish!</button>
 
-  document.querySelectorAll('.accordion-toggle').forEach(button => {
-    button.addEventListener('click', () => {
-      const section = button.parentElement;
-      document.querySelectorAll('.accordion-section').forEach(s => {
-        if (s !== section) s.classList.remove('open');
+    <div class="message" id="message"></div>
+
+    <div class="inventory" id="inventory">
+      <h3>Your Inventory</h3>
+      <ul id="inventory-list"></ul>
+    </div>
+  </main>
+
+  <script>
+    // Initial user data for demo
+    let hasFishingRod = false; // Should be checked from shop or user data in real app
+    let lastFishTime = 0;
+    let inventory = {};
+
+    // Fish lists by location
+    const fishByLocation = {
+      river: ['Trout', 'Catfish', 'Bass'],
+      lake: ['Perch', 'Pike', 'Bluegill'],
+      ocean: ['Salmon', 'Tuna', 'Mackerel'],
+    };
+
+    const cooldownMs = 30 * 60 * 1000; // 30 minutes cooldown
+
+    const messageEl = document.getElementById('message');
+    const inventoryListEl = document.getElementById('inventory-list');
+    const fishBtn = document.getElementById('fish-btn');
+
+    function updateInventoryUI() {
+      inventoryListEl.innerHTML = '';
+      const keys = Object.keys(inventory);
+      if (keys.length === 0) {
+        inventoryListEl.innerHTML = '<li>No Fish Yet</li>';
+        return;
+      }
+      keys.forEach(fish => {
+        const li = document.createElement('li');
+        li.textContent = `${fish} x${inventory[fish]}`;
+        inventoryListEl.appendChild(li);
       });
-      section.classList.toggle('open');
+    }
+
+    function canFish() {
+      const now = Date.now();
+      if (!hasFishingRod) {
+        messageEl.textContent = "You Need A Fishing Rod To Fish.";
+        return false;
+      }
+      if (now - lastFishTime < cooldownMs) {
+        const remainingMs = cooldownMs - (now - lastFishTime);
+        const mins = Math.floor(remainingMs / 60000);
+        const secs = Math.floor((remainingMs % 60000) / 1000);
+        messageEl.textContent = `You Must Wait ${mins}m ${secs}s Before Fishing Again.`;
+        return false;
+      }
+      return true;
+    }
+
+    fishBtn.addEventListener('click', () => {
+      if (!canFish()) return;
+
+      const location = document.getElementById('location-select').value;
+      const caught = fishByLocation[location][Math.floor(Math.random() * fishByLocation[location].length)];
+      inventory[caught] = (inventory[caught] || 0) + 1;
+      lastFishTime = Date.now();
+
+      messageEl.textContent = `You Caught A ${caught} In The ${location.charAt(0).toUpperCase() + location.slice(1)}!`;
+      updateInventoryUI();
     });
-  });
 
-  updateInventoryUI();
-</script>
+    updateInventoryUI();
 
+    function toggleMenu() {
+      document.querySelector('header').classList.toggle('active');
+      document.querySelector('.topnav-right').classList.toggle('active');
+      document.body.classList.toggle('menu-open');
+    }
+
+    document.querySelectorAll('.accordion-toggle').forEach(btn =>
+      btn.addEventListener('click', () => {
+        const section = btn.parentElement;
+        document.querySelectorAll('.accordion-section').forEach(s => {
+          if (s !== section) s.classList.remove('open');
+        });
+        section.classList.toggle('open');
+      })
+    );
+  </script>
 </body>
 </html>
