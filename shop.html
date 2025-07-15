@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#2c9118" />
+<meta name="description" content="Buy And Sell Items With Your Bank Balance And Inventory." />
+<title>Shop - Tamenomics</title>
+<link rel="icon" href="./img/pfp.png" />
+<link rel="stylesheet" href="https://therandoms.pages.dev/css/styles.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Jersey+10:wght@100;300;400;500;700;900&display=swap" rel="stylesheet" />
+<style>
+  body {
+    font-family: 'Jersey 10', sans-serif;
+    font-size: 30px;
+    margin: 0; padding: 0;
+    background: #f5f5f5;
+    color: #2c9118;
+    text-align: center;
+  }
+  header {
+    background: #2c9118;
+    color: white;
+    padding: 15px 0;
+  }
+  main {
+    max-width: 600px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgb(44 145 24 / 0.3);
+  }
+  select, input[type=number], button {
+    font-family: 'Jersey 10', sans-serif;
+    font-size: 24px;
+    padding: 10px 12px;
+    margin: 12px 6px;
+    border-radius: 8px;
+    border: 2px solid #2c9118;
+  }
+  button {
+    background: #2c9118;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background: #237b14;
+  }
+  .balance {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .message {
+    margin-top: 15px;
+    font-weight: 700;
+    color: red;
+    min-height: 26px;
+  }
+  nav {
+    margin-top: 30px;
+  }
+  nav a {
+    color: #2c9118;
+    font-weight: 700;
+    margin: 0 12px;
+    text-decoration: none;
+  }
+  nav a:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Shop - Tamenomics</h1>
+</header>
+<main>
+  <div class="balance" id="balance-display">Balance: $0</div>
+  
+  <label for="item-select">Select Item:</label><br />
+  <select id="item-select"></select><br />
+  
+  <label for="qty-input">Quantity:</label><br />
+  <input type="number" id="qty-input" min="1" value="1" /><br />
+  
+  <button id="buy-btn">Buy</button>
+  <button id="sell-btn">Sell</button>
+  
+  <div class="message" id="message"></div>
+
+  <nav>
+    <a href="index.html">Home</a> |
+    <a href="bank.html">Bank</a> |
+    <a href="hunt.html">Hunt</a> |
+    <a href="fish.html">Fish</a> |
+    <a href="inventory.html">Inventory</a>
+  </nav>
+</main>
+
+<script>
+  // Prices for items — for demo, fish cheaper than animals
+  const prices = {
+    Deer: 100,
+    Rabbit: 30,
+    Fox: 80,
+    Bear: 150,
+    Bison: 110,
+    Wolf: 90,
+    Coyote: 50,
+    'Mountain Goat': 120,
+    Eagle: 130,
+    Cougar: 140,
+    Trout: 25,
+    Bass: 20,
+    Carp: 15,
+    Catfish: 22,
+    Salmon: 35,
+    Pike: 30,
+    Sturgeon: 40,
+    Tuna: 50,
+    Marlin: 60,
+    Swordfish: 70,
+    Shark: 80
+  };
+
+  const balanceDisplay = document.getElementById('balance-display');
+  const itemSelect = document.getElementById('item-select');
+  const qtyInput = document.getElementById('qty-input');
+  const buyBtn = document.getElementById('buy-btn');
+  const sellBtn = document.getElementById('sell-btn');
+  const messageDiv = document.getElementById('message');
+
+  let inventory = JSON.parse(localStorage.getItem('inventory')) || {};
+  let balance = Number(localStorage.getItem('balance')) || 0;
+
+  function updateBalanceDisplay() {
+    balanceDisplay.textContent = `Balance: $${balance.toFixed(2)}`;
+  }
+
+  // Populate item select options from prices
+  function populateItems() {
+    itemSelect.innerHTML = '';
+    Object.keys(prices).forEach(item => {
+      const option = document.createElement('option');
+      option.value = item;
+      option.textContent = `${item} - $${prices[item]}`;
+      itemSelect.appendChild(option);
+    });
+  }
+
+  function clearMessage() {
+    messageDiv.textContent = '';
+  }
+
+  buyBtn.addEventListener('click', () => {
+    clearMessage();
+    const item = itemSelect.value;
+    const qty = Number(qtyInput.value);
+    if (!qty || qty < 1) {
+      messageDiv.textContent = 'Enter A Valid Quantity!';
+      return;
+    }
+    const cost = prices[item] * qty;
+    if (cost > balance) {
+      messageDiv.textContent = `Not Enough Balance To Buy ${qty} ${item}(s)!`;
+      return;
+    }
+    // Deduct balance and add items
+    balance -= cost;
+    inventory[item] = (inventory[item] || 0) + qty;
+    saveData();
+    updateBalanceDisplay();
+    messageDiv.style.color = 'green';
+    messageDiv.textContent = `You Bought ${qty} ${item}(s) For $${cost.toFixed(2)}.`;
+  });
+
+  sellBtn.addEventListener('click', () => {
+    clearMessage();
+    const item = itemSelect.value;
+    const qty = Number(qtyInput.value);
+    if (!qty || qty < 1) {
+      messageDiv.textContent = 'Enter A Valid Quantity!';
+      return;
+    }
+    if (!inventory[item] || inventory[item] < qty) {
+      messageDiv.textContent = `You Don't Have ${qty} ${item}(s) To Sell!`;
+      return;
+    }
+    const earnings = prices[item] * qty;
+    inventory[item] -= qty;
+    if (inventory[item] === 0) delete inventory[item];
+    balance += earnings;
+    saveData();
+    updateBalanceDisplay();
+    messageDiv.style.color = 'green';
+    messageDiv.textContent = `You Sold ${qty} ${item}(s) For $${earnings.toFixed(2)}.`;
+  });
+
+  function saveData() {
+    localStorage.setItem('inventory', JSON.stringify(inventory));
+    localStorage.setItem('balance', balance.toString());
+  }
+
+  // Initialize UI
+  populateItems();
+  updateBalanceDisplay();
+</script>
+</body>
+</html>
