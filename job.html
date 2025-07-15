@@ -225,6 +225,7 @@
       const oneDay = 24 * 60 * 60 * 1000;
       if (now - lastPaid >= oneDay) {
         cash += pay;
+localStorage.setItem('cash', cash);
         lastPaid = now;
         localStorage.setItem("lastPaid", lastPaid);
         save();
