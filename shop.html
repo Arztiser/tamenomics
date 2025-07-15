@@ -1,215 +1,196 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="theme-color" content="#2c9118" />
-<meta name="description" content="Buy And Sell Items With Your Bank Balance And Inventory." />
-<title>Shop - Tamenomics</title>
-<link rel="icon" href="./img/pfp.png" />
-<link rel="stylesheet" href="https://therandoms.pages.dev/css/styles.css" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Jersey+10:wght@100;300;400;500;700;900&display=swap" rel="stylesheet" />
-<style>
-  body {
-    font-family: 'Jersey 10', sans-serif;
-    font-size: 30px;
-    margin: 0; padding: 0;
-    background: #f5f5f5;
-    color: #2c9118;
-    text-align: center;
-  }
-  header {
-    background: #2c9118;
-    color: white;
-    padding: 15px 0;
-  }
-  main {
-    max-width: 600px;
-    margin: 40px auto;
-    background: white;
-    padding: 30px 40px;
-    border-radius: 10px;
-    box-shadow: 0 6px 15px rgb(44 145 24 / 0.3);
-  }
-  select, input[type=number], button {
-    font-family: 'Jersey 10', sans-serif;
-    font-size: 24px;
-    padding: 10px 12px;
-    margin: 12px 6px;
-    border-radius: 8px;
-    border: 2px solid #2c9118;
-  }
-  button {
-    background: #2c9118;
-    color: white;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  button:hover {
-    background: #237b14;
-  }
-  .balance {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 20px;
-  }
-  .message {
-    margin-top: 15px;
-    font-weight: 700;
-    color: red;
-    min-height: 26px;
-  }
-  nav {
-    margin-top: 30px;
-  }
-  nav a {
-    color: #2c9118;
-    font-weight: 700;
-    margin: 0 12px;
-    text-decoration: none;
-  }
-  nav a:hover {
-    text-decoration: underline;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#2c9118" />
+  <meta name="description" content="Shop - Tamenomics Discord Bot Economy" />
+  <title>Shop - Tamenomics</title>
+  <link rel="icon" href="./img/pfp.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+10:wght@100;300;400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Jersey 10', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      color: #2c9118;
+    }
+    header {
+      background-color: #2c9118;
+      padding: 12px 16px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      cursor: pointer;
+    }
+    .menu-icon {
+      font-size: 30px;
+      cursor: pointer;
+    }
+    .topnav-right {
+      display: none;
+      position: fixed;
+      top: 56px;
+      right: 0;
+      background-color: #2c9118;
+      width: 100%;
+      height: 100vh;
+      flex-direction: column;
+      z-index: 999;
+      overflow-y: auto;
+    }
+    .topnav.active .topnav-right {
+      display: flex;
+    }
+    .accordion-toggle {
+      background: none;
+      color: white;
+      padding: 14px;
+      font-size: 24px;
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+    }
+    .accordion-content {
+      display: none;
+      flex-direction: column;
+      background-color: #1e6f12;
+    }
+    .accordion-content a {
+      padding: 12px 28px;
+      border-top: 1px solid #146f0e;
+      font-size: 20px;
+      color: white;
+      text-decoration: none;
+    }
+    .accordion-content a:hover {
+      background: #146f0e;
+    }
+    .accordion-section.open .accordion-content {
+      display: flex;
+    }
+    main {
+      max-width: 600px;
+      margin: 24px auto;
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 0 10px rgba(44, 145, 24, 0.3);
+    }
+    h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+    .shop-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #ddd;
+      padding: 12px 0;
+    }
+    button {
+      font-family: 'Jersey 10', sans-serif;
+      font-size: 20px;
+      background: #2c9118;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #238110;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <h1>Shop - Tamenomics</h1>
-</header>
-<main>
-  <div class="balance" id="balance-display">Balance: $0</div>
-  
-  <label for="item-select">Select Item:</label><br />
-  <select id="item-select"></select><br />
-  
-  <label for="qty-input">Quantity:</label><br />
-  <input type="number" id="qty-input" min="1" value="1" /><br />
-  
-  <button id="buy-btn">Buy</button>
-  <button id="sell-btn">Sell</button>
-  
-  <div class="message" id="message"></div>
+  <header>
+    <h1 onclick="location.href='/'">Tamenomics</h1>
+    <span class="menu-icon" onclick="toggleMenu()">&#9776;</span>
+    <nav class="topnav-right">
+      <div class="accordion-section">
+        <button class="accordion-toggle">Actions</button>
+        <div class="accordion-content">
+          <a href="hunt.html">Hunt</a>
+          <a href="fish.html">Fish</a>
+          <a href="crime.html">Crime</a>
+          <a href="search.html">Search</a>
+        </div>
+      </div>
+      <div class="accordion-section">
+        <button class="accordion-toggle">Economy</button>
+        <div class="accordion-content">
+          <a href="bank.html">Bank</a>
+          <a href="casino.html">Casino</a>
+          <a href="jobs.html">Jobs</a>
+          <a href="shop.html">Shop</a>
+          <a href="sell.html">Sell</a>
+        </div>
+      </div>
+    </nav>
+  </header>  <main>
+    <h2>Shop</h2>
+    <div class="shop-item">
+      <span>Rifle - $500</span>
+      <button onclick="buyItem('hasRifle', 500)">Buy</button>
+    </div>
+    <div class="shop-item">
+      <span>Fishing Rod - $300</span>
+      <button onclick="buyItem('hasRod', 300)">Buy</button>
+    </div>
+    <div class="message" id="message"></div>
+  </main>  <script>
+    let user = JSON.parse(localStorage.getItem("tamenomicsUser")) || {
+      cash: 0,
+      inventory: {},
+      hasRifle: false,
+      hasRod: false
+    };
 
-  <nav>
-    <a href="index.html">Home</a> |
-    <a href="bank.html">Bank</a> |
-    <a href="hunt.html">Hunt</a> |
-    <a href="fish.html">Fish</a> |
-    <a href="inventory.html">Inventory</a>
-  </nav>
-</main>
-
-<script>
-  // Prices for items — for demo, fish cheaper than animals
-  const prices = {
-    Deer: 100,
-    Rabbit: 30,
-    Fox: 80,
-    Bear: 150,
-    Bison: 110,
-    Wolf: 90,
-    Coyote: 50,
-    'Mountain Goat': 120,
-    Eagle: 130,
-    Cougar: 140,
-    Trout: 25,
-    Bass: 20,
-    Carp: 15,
-    Catfish: 22,
-    Salmon: 35,
-    Pike: 30,
-    Sturgeon: 40,
-    Tuna: 50,
-    Marlin: 60,
-    Swordfish: 70,
-    Shark: 80
-  };
-
-  const balanceDisplay = document.getElementById('balance-display');
-  const itemSelect = document.getElementById('item-select');
-  const qtyInput = document.getElementById('qty-input');
-  const buyBtn = document.getElementById('buy-btn');
-  const sellBtn = document.getElementById('sell-btn');
-  const messageDiv = document.getElementById('message');
-
-  let inventory = JSON.parse(localStorage.getItem('inventory')) || {};
-  let balance = Number(localStorage.getItem('balance')) || 0;
-
-  function updateBalanceDisplay() {
-    balanceDisplay.textContent = `Balance: $${balance.toFixed(2)}`;
-  }
-
-  // Populate item select options from prices
-  function populateItems() {
-    itemSelect.innerHTML = '';
-    Object.keys(prices).forEach(item => {
-      const option = document.createElement('option');
-      option.value = item;
-      option.textContent = `${item} - $${prices[item]}`;
-      itemSelect.appendChild(option);
-    });
-  }
-
-  function clearMessage() {
-    messageDiv.textContent = '';
-  }
-
-  buyBtn.addEventListener('click', () => {
-    clearMessage();
-    const item = itemSelect.value;
-    const qty = Number(qtyInput.value);
-    if (!qty || qty < 1) {
-      messageDiv.textContent = 'Enter A Valid Quantity!';
-      return;
+    function saveUserData() {
+      localStorage.setItem("tamenomicsUser", JSON.stringify(user));
     }
-    const cost = prices[item] * qty;
-    if (cost > balance) {
-      messageDiv.textContent = `Not Enough Balance To Buy ${qty} ${item}(s)!`;
-      return;
-    }
-    // Deduct balance and add items
-    balance -= cost;
-    inventory[item] = (inventory[item] || 0) + qty;
-    saveData();
-    updateBalanceDisplay();
-    messageDiv.style.color = 'green';
-    messageDiv.textContent = `You Bought ${qty} ${item}(s) For $${cost.toFixed(2)}.`;
-  });
 
-  sellBtn.addEventListener('click', () => {
-    clearMessage();
-    const item = itemSelect.value;
-    const qty = Number(qtyInput.value);
-    if (!qty || qty < 1) {
-      messageDiv.textContent = 'Enter A Valid Quantity!';
-      return;
+    function buyItem(item, cost) {
+      const message = document.getElementById("message");
+      if (user[item]) {
+        message.textContent = "You Already Own This Item.";
+        return;
+      }
+      if (user.cash < cost) {
+        message.textContent = "Not Enough Cash.";
+        return;
+      }
+      user.cash -= cost;
+      user[item] = true;
+      saveUserData();
+      message.textContent = "Purchase Successful!";
     }
-    if (!inventory[item] || inventory[item] < qty) {
-      messageDiv.textContent = `You Don't Have ${qty} ${item}(s) To Sell!`;
-      return;
+
+    function toggleMenu() {
+      document.querySelector('header').classList.toggle('active');
+      document.querySelector('.topnav-right').classList.toggle('active');
+      document.body.classList.toggle('menu-open');
     }
-    const earnings = prices[item] * qty;
-    inventory[item] -= qty;
-    if (inventory[item] === 0) delete inventory[item];
-    balance += earnings;
-    saveData();
-    updateBalanceDisplay();
-    messageDiv.style.color = 'green';
-    messageDiv.textContent = `You Sold ${qty} ${item}(s) For $${earnings.toFixed(2)}.`;
-  });
 
-  function saveData() {
-    localStorage.setItem('inventory', JSON.stringify(inventory));
-    localStorage.setItem('balance', balance.toString());
-  }
-
-  // Initialize UI
-  populateItems();
-  updateBalanceDisplay();
-</script>
-</body>
+    document.querySelectorAll('.accordion-toggle').forEach(btn =>
+      btn.addEventListener('click', () => {
+        const section = btn.parentElement;
+        document.querySelectorAll('.accordion-section').forEach(s => {
+          if (s !== section) s.classList.remove('open');
+        });
+        section.classList.toggle('open');
+      })
+    );
+  </script></body>
 </html>
