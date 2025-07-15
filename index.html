@@ -1,56 +1,143 @@
-<!-- Initial file: index.html --><!-- This will serve as the main hub for Tamenomics --><!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#2c9118" />
-  <title>Tamenomics</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2c9118">
+  <title>Tamenomics - Home</title>
+  <link rel="icon" href="/img/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2c9118;
+      --bg: #f0f0f0;
+      --text: #222;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Jersey 10', sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 0;
+      color: var(--text);
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 2rem;
+    }
+
+    .menu-icon {
+      display: block;
+      font-size: 32px;
+      color: white;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      cursor: pointer;
+    }
+
+    nav {
+      background: var(--primary);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.5rem;
+      margin: 0.5rem 0;
+    }
+
+    .container {
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .card a {
+      text-decoration: none;
+      font-size: 1.8rem;
+      color: var(--primary);
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        padding: 1rem;
+        align-items: center;
+      }
+
+      .card a {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <h1><a href="index.html" class="logo">Tamenomics</a></h1>
-    <span class="menu-icon" onclick="toggleMenu()">&#9776;</span>
-    <nav class="topnav-right">
-      <div class="accordion-section">
-        <button class="accordion-toggle">Economy</button>
-        <div class="accordion-content">
-          <a href="bank.html">Bank</a>
-          <a href="shop.html">Shop</a>
-          <a href="sell.html">Sell</a>
-          <a href="inventory.html">Inventory</a>
-        </div>
-      </div>
-      <div class="accordion-section">
-        <button class="accordion-toggle">Actions</button>
-        <div class="accordion-content">
-          <a href="hunt.html">Hunt</a>
-          <a href="fish.html">Fish</a>
-          <a href="casino.html">Casino</a>
-          <a href="job.html">Jobs</a>
-          <a href="crime.html">Crime</a>
-          <a href="search.html">Search</a>
-        </div>
-      </div>
-    </nav>
+  <header>
+    Tamenomics
+    <div class="menu-icon" onclick="toggleMenu()">&#9776;</div>
   </header>
-  <main class="container">
+
+  <nav id="menu" style="display:none">
+    <a href="index.html">Home</a>
+    <a href="bank.html">Bank</a>
+    <a href="inventory.html">Inventory</a>
+    <a href="shop.html">Shop</a>
+    <a href="hunt.html">Hunting</a>
+    <a href="fish.html">Fishing</a>
+    <a href="jobs.html">Jobs</a>
+    <a href="sell.html">Sell</a>
+    <a href="casino.html">Casino</a>
+    <a href="crime.html">Crime</a>
+    <a href="search.html">Search</a>
+  </nav>
+
+  <div class="container">
     <h1>Welcome To Tamenomics</h1>
-    <p>Track Your Economy, Hunt, Fish, Work, And More!</p>
-    <p>Your Legacy Begins Here.</p>
-  </main>  <script>
+    <div class="card"><a href="bank.html">💰 Bank</a></div>
+    <div class="card"><a href="inventory.html">🎒 Inventory</a></div>
+    <div class="card"><a href="shop.html">🛒 Shop</a></div>
+    <div class="card"><a href="hunt.html">🏹 Hunting</a></div>
+    <div class="card"><a href="fish.html">🎣 Fishing</a></div>
+    <div class="card"><a href="jobs.html">👔 Jobs</a></div>
+    <div class="card"><a href="sell.html">📤 Sell</a></div>
+    <div class="card"><a href="casino.html">🎰 Casino</a></div>
+    <div class="card"><a href="crime.html">🕵️ Crime</a></div>
+    <div class="card"><a href="search.html">🔍 Search</a></div>
+  </div>
+
+  <script>
     function toggleMenu() {
-      document.querySelector('.topnav').classList.toggle('active');
-      document.body.classList.toggle('menu-open');
+      const menu = document.getElementById("menu");
+      menu.style.display = menu.style.display === "none" ? "block" : "none";
     }
-    document.querySelectorAll('.accordion-toggle').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const sec = btn.parentElement;
-        document.querySelectorAll('.accordion-section').forEach(s => {
-          if (s !== sec) s.classList.remove('open');
-        });
-        sec.classList.toggle('open');
-      });
-    });
-  </script></body>
+  </script>
+</body>
 </html>
