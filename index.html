@@ -3,28 +3,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#2c9118">
-  <title>Tamenomics - Home</title>
+  <meta name="description" content="Tamenomics - Economy System for Tamo Bot">
+  <title>Tamenomics</title>
+  <link rel="icon" type="image/png" href="/img/pfp.png">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap">
   <style>
     body {
       font-family: 'Jersey 10', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f9f9f9;
-      color: #222;
+      background-color: #f0f0f0;
     }.topnav {
   background-color: #2c9118;
-  color: white;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 0 16px;
   height: 60px;
+  color: #fff;
 }
 
 .topnav h1 {
+  font-size: 24px;
   margin: 0;
-  font-size: 28px;
 }
 
 .menu-icon {
@@ -37,24 +38,29 @@
   position: fixed;
   top: 60px;
   right: 0;
+  background-color: #2c9118;
   width: 100%;
   height: 100vh;
-  background-color: #2c9118;
   flex-direction: column;
   z-index: 999;
+  overflow-y: auto;
 }
 
 .topnav.active .topnav-right {
   display: flex;
 }
 
+.accordion-section {
+  border-top: 1px solid #1e6813;
+}
+
 .accordion-toggle {
   background: none;
-  border: none;
   color: white;
-  font-size: 24px;
-  padding: 16px;
+  padding: 14px;
   text-align: left;
+  font-size: 24px;
+  border: none;
   width: 100%;
   cursor: pointer;
 }
@@ -62,43 +68,34 @@
 .accordion-content {
   display: none;
   flex-direction: column;
-  background-color: #3aa92f;
-}
-
-.accordion-content a {
-  color: white;
-  padding: 12px 24px;
-  text-decoration: none;
-  font-size: 20px;
-  border-top: 1px solid #ffffff55;
+  background-color: #3db728;
 }
 
 .accordion-section.open .accordion-content {
   display: flex;
 }
 
+.accordion-content a {
+  padding: 10px 28px;
+  border-top: 1px solid #2c9118;
+  font-size: 20px;
+  color: white;
+  text-decoration: none;
+}
+
 .container {
   padding: 20px;
-}
-
-.feature-card {
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;
   text-align: center;
-  transition: transform 0.2s;
 }
 
-.feature-card:hover {
-  transform: scale(1.02);
-}
-
-.feature-card a {
-  text-decoration: none;
+h1 {
+  font-size: 36px;
   color: #2c9118;
+}
+
+p {
   font-size: 24px;
+  color: #333;
 }
 
   </style>
@@ -110,34 +107,30 @@
       <span class="menu-icon" onclick="toggleMenu()">&#9776;</span>
       <div class="topnav-right">
         <div class="accordion-section">
-          <button class="accordion-toggle">Main Menu</button>
+          <button class="accordion-toggle">Actions</button>
           <div class="accordion-content">
-            <a href="index.html">Home</a>
+            <a href="hunt.html">Hunting</a>
+            <a href="fish.html">Fishing</a>
+            <a href="crime.html">Crime</a>
+            <a href="search.html">Search</a>
+            <a href="job.html">Daily Job</a>
+          </div>
+        </div>
+        <div class="accordion-section">
+          <button class="accordion-toggle">Economy</button>
+          <div class="accordion-content">
             <a href="bank.html">Bank</a>
             <a href="inventory.html">Inventory</a>
             <a href="shop.html">Shop</a>
-            <a href="hunt.html">Hunting</a>
-            <a href="fish.html">Fishing</a>
+            <a href="sell.html">Sell</a>
             <a href="casino.html">Casino</a>
-            <a href="job.html">Jobs</a>
-            <a href="crime.html">Crime</a>
-            <a href="search.html">Search</a>
-            <a href="sell.html">Sell Items</a>
           </div>
         </div>
       </div>
     </div>
   </header>  <div class="container">
-    <div class="feature-card"><a href="bank.html">Bank</a></div>
-    <div class="feature-card"><a href="inventory.html">Inventory</a></div>
-    <div class="feature-card"><a href="shop.html">Shop</a></div>
-    <div class="feature-card"><a href="hunt.html">Go Hunting</a></div>
-    <div class="feature-card"><a href="fish.html">Go Fishing</a></div>
-    <div class="feature-card"><a href="casino.html">Casino</a></div>
-    <div class="feature-card"><a href="job.html">Jobs</a></div>
-    <div class="feature-card"><a href="crime.html">Crime</a></div>
-    <div class="feature-card"><a href="search.html">Search</a></div>
-    <div class="feature-card"><a href="sell.html">Sell Items</a></div>
+    <h1>Welcome To Tamenomics</h1>
+    <p>Manage Your Economy, Explore Adventures, And Build Your Wealth.</p>
   </div>  <script>
     function toggleMenu() {
       const topnav = document.querySelector('.topnav');
@@ -146,13 +139,13 @@
       body.classList.toggle('menu-open');
     }
 
-    document.querySelectorAll('.accordion-toggle').forEach(toggle => {
-      toggle.addEventListener('click', () => {
-        const parent = toggle.parentElement;
-        document.querySelectorAll('.accordion-section').forEach(section => {
-          if (section !== parent) section.classList.remove('open');
+    document.querySelectorAll('.accordion-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const section = btn.parentElement;
+        document.querySelectorAll('.accordion-section').forEach(s => {
+          if (s !== section) s.classList.remove('open');
         });
-        parent.classList.toggle('open');
+        section.classList.toggle('open');
       });
     });
   </script></body>
