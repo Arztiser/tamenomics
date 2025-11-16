@@ -19,7 +19,6 @@ button { background: #2c9118; color: #fff; cursor: pointer; }
 button:hover { background: #1f6d13; }
 button:disabled { background: #aaa; cursor: not-allowed; }
 footer { text-align: center; padding: 20px; background: #000; color: #fff; margin-top: 30px; }
-
 .cooldown-text { margin-top: 10px; color: #000; font-size: 1.2rem; }
 </style>
 </head>
@@ -60,22 +59,31 @@ let items = JSON.parse(localStorage.getItem('items')) || {};
 function saveItems() { localStorage.setItem('items', JSON.stringify(items)); }
 function addItem(itemName) { if (!items[itemName]) items[itemName] = 0; items[itemName]++; saveItems(); }
 
-// FISH DATA
+// Fish table for each location
 const fishData = {
   river: [
-    {name: "Small Trout", value: 5, chance: 0.6},
-    {name: "Large Trout", value: 15, chance: 0.3},
-    {name: "Golden Trout", value: 50, chance: 0.1}
+    {name:"Fish", chance:0.4},
+    {name:"Pufferfish", chance:0.2},
+    {name:"Otter", chance:0.1},
+    {name:"Crab", chance:0.15},
+    {name:"Tropical Fish", chance:0.1},
+    {name:"Shark", chance:0.05}
   ],
   lake: [
-    {name: "Carp", value: 5, chance: 0.5},
-    {name: "Bass", value: 20, chance: 0.35},
-    {name: "Legendary Bass", value: 60, chance: 0.15}
+    {name:"Fish", chance:0.35},
+    {name:"Pufferfish", chance:0.15},
+    {name:"Otter", chance:0.15},
+    {name:"Crab", chance:0.15},
+    {name:"Tropical Fish", chance:0.15},
+    {name:"Shark", chance:0.05}
   ],
   ocean: [
-    {name: "Mackerel", value: 10, chance: 0.55},
-    {name: "Tuna", value: 30, chance: 0.35},
-    {name: "Shark", value: 80, chance: 0.1}
+    {name:"Fish", chance:0.2},
+    {name:"Pufferfish", chance:0.1},
+    {name:"Otter", chance:0.05},
+    {name:"Crab", chance:0.2},
+    {name:"Tropical Fish", chance:0.2},
+    {name:"Shark", chance:0.25}
   ]
 };
 
@@ -83,16 +91,17 @@ function catchFish(location) {
   const table = fishData[location];
   let roll = Math.random();
   let cumulative = 0;
-  for (let i of table) {
-    cumulative += i.chance;
-    if (roll <= cumulative) return i.name;
+  for (let fish of table) {
+    cumulative += fish.chance;
+    if (roll <= cumulative) return fish.name;
   }
+  return "Fish"; // fallback
 }
 
 // ---- COOLDOWN SYSTEM ----
-const COOLDOWN_TIME = 3600000; // 1 hour in ms
-let cooldownDisplay = document.getElementById("cooldown-display");
-let fishBtn = document.getElementById("fish-btn");
+const COOLDOWN_TIME = 3600000; // 1 hour
+const cooldownDisplay = document.getElementById("cooldown-display");
+const fishBtn = document.getElementById("fish-btn");
 
 function checkCooldown() {
   const lastFish = parseInt(localStorage.getItem("lastFish")) || 0;
@@ -106,11 +115,9 @@ function checkCooldown() {
   }
 
   fishBtn.disabled = true;
-  let mins = Math.floor(remaining / 60000);
-  let secs = Math.floor((remaining % 60000) / 1000);
-
+  const mins = Math.floor(remaining / 60000);
+  const secs = Math.floor((remaining % 60000) / 1000);
   cooldownDisplay.textContent = `Next cast in ${mins}m ${secs}s`;
-
   requestAnimationFrame(checkCooldown);
 }
 
@@ -118,19 +125,12 @@ checkCooldown();
 
 // ---- FISH BUTTON ----
 fishBtn.addEventListener('click', () => {
-
   const location = document.getElementById('location-select').value;
   if (!location) return alert("Select a location first!");
 
-  const hasRod = items["Fishing Rod"] > 0;
-
-  // Save cooldown start
-  localStorage.setItem("lastFish", Date.now());
-  checkCooldown();
-
-  if (!hasRod) {
-    const junk = ["Mud", "Rock", "Boot"];
-    const caught = junk[Math.floor(Math.random() * junk.length)];
+  if (!items["Fishing Rod"] || items["Fishing Rod"] <= 0) {
+    const junk = ["Mud","Rock","Boot"];
+    const caught = junk[Math.floor(Math.random()*junk.length)];
     addItem(caught);
     alert(`No fishing rod! You caught ${caught}.`);
   } else {
@@ -138,6 +138,10 @@ fishBtn.addEventListener('click', () => {
     addItem(caught);
     alert(`You caught: ${caught}!`);
   }
+
+  // start cooldown
+  localStorage.setItem("lastFish", Date.now());
+  checkCooldown();
 });
 </script>
 
