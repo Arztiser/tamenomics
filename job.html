@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,11 +18,10 @@ h2 { color: #2c9118; margin-bottom: 25px; font-size: 2rem; }
 button { padding: 12px 0; width: 90%; font-size: 1rem; font-family: 'Jersey 10', sans-serif; font-weight: bold; border: none; border-radius: 8px; background: #2c9118; color: #fff; cursor: pointer; margin: 8px 0; transition: background 0.3s; display: block; margin-left: auto; margin-right: auto; }
 button:hover { background: #1f6d13; }
 button:disabled { background: #aaa; cursor: not-allowed; }
-select { width: 90%; padding: 10px; font-family: 'Jersey 10',sans-serif; font-size: 1rem; margin: 10px 0; border-radius: 8px; border: 2px solid #2c9118; }
+select { width: 90%; padding: 10px; font-family: 'Jersey 10', sans-serif; font-size: 1rem; margin: 10px 0; border-radius: 8px; border: 2px solid #2c9118; }
 .stats-container { display: flex; justify-content: center; flex-wrap: wrap; margin-top: 35px; }
 .stat-card { background: #000; color: #fff; padding: 20px; border-radius: 12px; min-width: 200px; margin: 10px; }
 .stat-card p { color: #2c9118; font-size: 1.5rem; font-weight: bold; margin: 5px 0 0; word-wrap: break-word; }
-#cooldown-msg { color: #2c9118; font-weight: bold; margin-top: 10px; }
 footer { text-align: center; padding: 20px; background: #000; color: #fff; margin-top: 30px; }
 label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; color: #2c9118; }
 </style>
@@ -32,7 +32,7 @@ label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; co
 <h1 onclick="location.href='index.html'">Tamenomics 2</h1>
 <nav>
   <a href="bank.html">Bank</a>
-  <a href="jobs.html">Jobs</a>
+  <a href="job.html">Jobs</a>
   <a href="fishing.html">Fishing</a>
   <a href="hunting.html">Hunting</a>
   <a href="shop.html">Shop</a>
@@ -43,22 +43,18 @@ label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; co
 
 <main>
 <h2>Jobs</h2>
+
 <label for="job-select">Select a Job:</label>
 <select id="job-select">
   <option value="" disabled selected>Choose a job</option>
 </select>
 <button id="apply-job-btn">Apply for Job</button>
 <button id="complete-job-btn">Complete Job</button>
-<p id="cooldown-msg"></p>
 
 <div class="stats-container">
   <div class="stat-card">
-    <h3>Jobs</h3>
-    <p id="jobs-stat">None</p>
-  </div>
-  <div class="stat-card">
-    <h3>Balance</h3>
-    <p id="balance-stat">0 Z</p>
+    <h3>Current Job</h3>
+    <p id="current-job-stat">None</p>
   </div>
 </div>
 </main>
@@ -66,20 +62,16 @@ label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; co
 <footer>&copy; 2025 Arztiser</footer>
 
 <script>
-// ===== State =====
-let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+// Initialize state
 let currentJob = localStorage.getItem('currentJob') || null;
+let jobTakenToday = localStorage.getItem('jobTakenToday') === 'true';
+let jobCompletedToday = localStorage.getItem('jobCompletedToday') === 'true';
 let failedJobs = JSON.parse(localStorage.getItem('failedJobs')) || [];
-let lastJobTime = parseInt(localStorage.getItem('lastJobTime') || 0);
-let money = parseInt(localStorage.getItem('money') || 0);
 
-const COOLDOWN = 24*60*60*1000; // 24 hours
-const jobsStat = document.getElementById('jobs-stat');
-const balanceStat = document.getElementById('balance-stat');
+const currentJobStat = document.getElementById('current-job-stat');
 const jobSelect = document.getElementById('job-select');
 const applyJobBtn = document.getElementById('apply-job-btn');
 const completeJobBtn = document.getElementById('complete-job-btn');
-const cooldownMsg = document.getElementById('cooldown-msg');
 
 const jobList = [
   {name:"Fast Food Worker", stars:1, pay:10, chance:0.95},
@@ -94,11 +86,36 @@ const jobList = [
   {name:"Company Owner", stars:5, pay:100, chance:0.05}
 ];
 
-// ===== Functions =====
+function updateStats() {
+  currentJobStat.textContent = currentJob || 'None';
+  renderJobDropdown();
+
+  // Disable complete job button if already completed or no job
+  if(jobCompletedToday || !currentJob) {
+    completeJobBtn.disabled = true;
+  } else {
+    completeJobBtn.disabled = false;
+  }
+
+  localStorage.setItem('currentJob', currentJob);
+  localStorage.setItem('jobTakenToday', jobTakenToday);
+  localStorage.setItem('jobCompletedToday', jobCompletedToday);
+  localStorage.setItem('failedJobs', JSON.stringify(failedJobs));
+}
+
 function renderJobDropdown() {
   jobSelect.innerHTML = '<option value="" disabled selected>Choose a job</option>';
+  if(currentJob || jobTakenToday) {
+    jobSelect.disabled = true;
+    applyJobBtn.disabled = true;
+    return;
+  } else {
+    jobSelect.disabled = false;
+    applyJobBtn.disabled = false;
+  }
+
   jobList.forEach(job => {
-    if(!failedJobs.includes(job.name)){
+    if(job.stars <= 5 && !failedJobs.includes(job.name)) {
       const opt = document.createElement('option');
       opt.value = job.name;
       opt.textContent = `${job.name} (${job.stars}★)`;
@@ -107,70 +124,43 @@ function renderJobDropdown() {
   });
 }
 
-function updateStats() {
-  jobsStat.textContent = jobs.length ? jobs.join(', ') : 'None';
-  balanceStat.textContent = `${money} Z`;
-  localStorage.setItem('jobs', JSON.stringify(jobs));
-  localStorage.setItem('currentJob', currentJob);
-  localStorage.setItem('failedJobs', JSON.stringify(failedJobs));
-  localStorage.setItem('money', money);
-  localStorage.setItem('lastJobTime', lastJobTime);
-}
-
-function updateCooldown() {
-  const now = Date.now();
-  const remaining = lastJobTime + COOLDOWN - now;
-  if(remaining <= 0){
-    applyJobBtn.disabled = false;
-    completeJobBtn.disabled = currentJob ? false : true;
-    cooldownMsg.textContent = '';
-  } else {
-    applyJobBtn.disabled = true;
-    completeJobBtn.disabled = true;
-    const hours = Math.floor(remaining / (1000*60*60));
-    const minutes = Math.floor((remaining % (1000*60*60)) / (1000*60));
-    const seconds = Math.floor((remaining % (1000*60)) / 1000);
-    cooldownMsg.textContent = `Next job available in ${hours}h ${minutes}m ${seconds}s`;
-  }
-}
-
-// ===== Events =====
 applyJobBtn.addEventListener('click', () => {
   const selectedJobName = jobSelect.value;
   if(!selectedJobName) return alert("Please select a job!");
   const job = jobList.find(j => j.name === selectedJobName);
 
-  if(Math.random() <= job.chance){
+  if(Math.random() <= job.chance) {
     currentJob = job.name;
-    jobs.push(currentJob);
-    lastJobTime = Date.now();
-    alert(`Success! You got the job: ${job.name}`);
+    jobTakenToday = true;
+    jobCompletedToday = false;
+    alert(`You got the job: ${job.name}! Complete it to earn ${job.pay} Z.`);
   } else {
     failedJobs.push(job.name);
-    alert(`Denied for ${job.name}, try another job.`);
+    alert(`You were denied for ${job.name}. Try another job!`);
   }
-  renderJobDropdown();
   updateStats();
-  updateCooldown();
 });
 
 completeJobBtn.addEventListener('click', () => {
-  if(!currentJob) return alert("No current job to complete!");
-  const job = jobList.find(j => j.name === currentJob);
-  money += job.pay;
-  alert(`Job completed! You earned ${job.pay} Z.`);
+  if(!currentJob) { alert("No current job to complete!"); return; }
+  if(jobCompletedToday) { alert("You already completed a job today."); return; }
+
+  let job = jobList.find(j => j.name === currentJob);
+  // Add Zenas to your balance (stored in localStorage)
+  let money = parseInt(localStorage.getItem('money') || 0);
+  money += job ? job.pay : 0;
+  localStorage.setItem('money', money);
+
+  alert(`Job completed! You earned ${job ? job.pay : 0} Z.`);
+
+  // Reset current job
   currentJob = null;
-  lastJobTime = Date.now();
+  jobTakenToday = false;
+  jobCompletedToday = true;
   updateStats();
-  updateCooldown();
 });
 
-// ===== Init =====
-renderJobDropdown();
 updateStats();
-updateCooldown();
-setInterval(updateCooldown, 1000);
 </script>
-
 </body>
 </html>
