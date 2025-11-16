@@ -48,6 +48,7 @@ footer { text-align:center; padding:20px; background:#000; color:#fff; margin-to
 <button class="tab-btn" data-tab="items">Items</button>
 <button class="tab-btn" data-tab="pets">Pets</button>
 <button class="tab-btn" data-tab="skills">Skills</button>
+<button class="tab-btn" data-tab="inventory">Inventory</button>
 </div>
 
 <main id="shop-container"></main>
@@ -55,9 +56,10 @@ footer { text-align:center; padding:20px; background:#000; color:#fff; margin-to
 <footer>&copy; 2025 Arztiser</footer>
 
 <script>
-let money = parseInt(localStorage.getItem('money') || 0);
-let inventory = JSON.parse(localStorage.getItem('items') || '{}');
+let bank = parseInt(localStorage.getItem('bank') || 0);
+let inventory = JSON.parse(localStorage.getItem('items')) || {};
 
+// Shop items
 const shopItems = [
   {name:"Car", price:3000, type:"technology"},
   {name:"Laptop", price:400, type:"technology"},
@@ -81,62 +83,101 @@ const shopItems = [
   {name:"Luring", price:3500, type:"skills"}
 ];
 
+// Items that can be sold (including catches)
 const sellPrices = {
   "Car":1500,"Laptop":200,"Phone":150,"TV":300,"Bundle":20,"Fishing Rod":500,"Name Tag":50,"Rifle":1000,
-  "Skunk":10,"Boar":25,"Bear":25,"Dragon":300,"Duck":15,"Deer":25,"Armadillo":25,"Boot":10,"Fish":20,
-  "Tropical Fish":30,"Pufferfish":20,"Shark":300,"Otter":50,"Crab":30
+  "Skunk":10,"Boar":25,"Bear":25,"Dragon":300,"Duck":15,"Deer":25,"Armadillo":25,"Boot":10,
+  "Fish":20,"Tropical Fish":30,"Pufferfish":20,"Shark":300,"Otter":50,"Crab":30
 };
 
 const container = document.getElementById('shop-container');
-shopItems.forEach(item => {
-  const card = document.createElement('div');
-  card.classList.add('item-card');
-  card.dataset.type = item.type;
-  card.innerHTML = `
-    <h3>${item.name}</h3>
-    <div class="price">${item.price} Zenas</div>
-    <button class="buy-btn">Buy</button>
-    <button class="sell-btn">Sell</button>
-  `;
 
-  card.querySelector('.buy-btn').addEventListener('click', () => {
-    if(money < item.price) return alert("Not enough Zenas!");
-    money -= item.price;
-    inventory[item.name] = (inventory[item.name]||0)+1;
-    localStorage.setItem('money', money);
-    localStorage.setItem('items', JSON.stringify(inventory));
-    alert(`Bought ${item.name}!`);
+// Render shop items
+function renderShop() {
+  container.innerHTML = '';
+
+  shopItems.forEach(item => {
+    const card = document.createElement('div');
+    card.classList.add('item-card');
+    card.dataset.type = item.type;
+    card.innerHTML = `
+      <h3>${item.name}</h3>
+      <div class="price">${item.price} Zenas</div>
+      <button class="buy-btn">Buy</button>
+      <button class="sell-btn">Sell</button>
+    `;
+
+    // Buy
+    card.querySelector('.buy-btn').addEventListener('click', () => {
+      if(bank < item.price){ alert("Not enough Zenas!"); return; }
+      bank -= item.price;
+      inventory[item.name] = (inventory[item.name]||0)+1;
+      localStorage.setItem('bank', bank);
+      localStorage.setItem('items', JSON.stringify(inventory));
+      alert(`Bought ${item.name}!`);
+    });
+
+    // Sell
+    card.querySelector('.sell-btn').addEventListener('click', () => {
+      if(!inventory[item.name] || inventory[item.name]<=0){ alert(`You don't have any ${item.name} to sell!`); return; }
+      inventory[item.name]--;
+      bank += sellPrices[item.name] || 0;
+      localStorage.setItem('bank', bank);
+      localStorage.setItem('items', JSON.stringify(inventory));
+      alert(`Sold ${item.name} for ${sellPrices[item.name]} Zenas!`);
+    });
+
+    container.appendChild(card);
   });
+}
 
-  card.querySelector('.sell-btn').addEventListener('click', () => {
-    if(!inventory[item.name] || inventory[item.name]<=0) return alert(`No ${item.name} to sell!`);
-    inventory[item.name]--;
-    money += sellPrices[item.name] || 0;
-    localStorage.setItem('money', money);
-    localStorage.setItem('items', JSON.stringify(inventory));
-    alert(`Sold ${item.name} for ${sellPrices[item.name]} Zenas!`);
+// Render inventory tab items for selling
+function renderInventoryTab() {
+  // Remove old inventory cards
+  document.querySelectorAll('.item-card.inventory').forEach(c => c.remove());
+
+  Object.keys(inventory).forEach(itemName => {
+    if(inventory[itemName] > 0 && !shopItems.find(s => s.name === itemName)) {
+      const card = document.createElement('div');
+      card.classList.add('item-card', 'inventory');
+      card.dataset.type = 'inventory';
+      card.innerHTML = `
+        <h3>${itemName}</h3>
+        <div class="price">${sellPrices[itemName] || 0} Zenas</div>
+        <button class="sell-btn">Sell</button>
+      `;
+
+      card.querySelector('.sell-btn').addEventListener('click', () => {
+        inventory[itemName]--;
+        bank += sellPrices[itemName] || 0;
+        localStorage.setItem('bank', bank);
+        localStorage.setItem('items', JSON.stringify(inventory));
+        alert(`Sold ${itemName} for ${sellPrices[itemName] || 0} Zenas!`);
+        renderInventoryTab();
+      });
+
+      container.appendChild(card);
+    }
   });
+}
 
-  container.appendChild(card);
-});
-
-// Tabs
+// Tab switching
 const tabs = document.querySelectorAll('.tab-btn');
 tabs.forEach(tab => {
   tab.addEventListener('click', () => {
     tabs.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     const type = tab.dataset.tab;
-    document.querySelectorAll('.item-card').forEach(card => {
-      card.classList.remove('active');
-      if(card.dataset.type === type) card.classList.add('active');
-    });
+    document.querySelectorAll('.item-card').forEach(c => c.classList.remove('active'));
+    if(type === 'inventory') renderInventoryTab();
+    document.querySelectorAll(`.item-card.${type}`).forEach(c => c.classList.add('active'));
   });
 });
 
-// Activate first tab
-document.querySelectorAll('.item-card').forEach(card => {
-  if(card.dataset.type === 'technology') card.classList.add('active');
+// Initial render
+renderShop();
+document.querySelectorAll('.item-card').forEach(c => {
+  if(c.dataset.type === 'technology') c.classList.add('active');
 });
 </script>
 
