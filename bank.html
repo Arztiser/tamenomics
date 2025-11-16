@@ -1,291 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#2c9118" />
-  <meta name="description" content="Bank - Tamenomics Discord Bot Economy" />
-  <title>Bank - Tamenomics</title>
-  <link rel="icon" href="./img/pfp.png" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Jersey+10:wght@100;300;400;500;700;900&display=swap"
-    rel="stylesheet"
-  />
-  <style>
-    body {
-      font-family: 'Jersey 10', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f5f5f5;
-      color: #2c9118;
-    }
-    header {
-      background-color: #2c9118;
-      padding: 12px 16px;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    header h1 {
-      margin: 0;
-      font-weight: 700;
-      font-size: 28px;
-      cursor: pointer;
-      user-select: none;
-    }
-    .menu-icon {
-      font-size: 30px;
-      cursor: pointer;
-      user-select: none;
-    }
-    .topnav-right {
-      display: none;
-      position: fixed;
-      top: 56px;
-      right: 0;
-      background-color: #2c9118;
-      width: 100%;
-      height: 100vh;
-      flex-direction: column;
-      z-index: 999;
-      overflow-y: auto;
-    }
-    .topnav.active .topnav-right {
-      display: flex;
-    }
-    body.menu-open {
-      overflow: hidden;
-    }
-    .accordion-toggle {
-      background: none;
-      color: white;
-      padding: 14px;
-      text-align: left;
-      font-size: 24px;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      width: 100%;
-      font-family: 'Jersey 10', sans-serif;
-      user-select: none;
-    }
-    .accordion-content {
-      display: none;
-      flex-direction: column;
-      background-color: #1e6f12;
-    }
-    .accordion-content a {
-      padding: 12px 28px;
-      border-top: 1px solid #146f0e;
-      font-size: 20px;
-      color: white;
-      text-decoration: none;
-      user-select: none;
-    }
-    .accordion-content a:hover {
-      background: #146f0e;
-    }
-    .accordion-section {
-      display: flex;
-      flex-direction: column;
-      border-top: 1px solid #1e6f12;
-    }
-    .accordion-section.open .accordion-content {
-      display: flex;
-    }
-    main {
-      max-width: 600px;
-      margin: 24px auto;
-      background: white;
-      border-radius: 8px;
-      padding: 24px;
-      box-shadow: 0 0 10px rgba(44, 145, 24, 0.3);
-    }
-    h2 {
-      font-weight: 700;
-      font-size: 32px;
-      margin-bottom: 20px;
-      color: #2c9118;
-      user-select: none;
-    }
-    .balance {
-      font-size: 20px;
-      margin-bottom: 16px;
-      user-select: none;
-    }
-    label {
-      display: block;
-      margin: 12px 0 6px;
-      font-weight: 500;
-      user-select: none;
-    }
-    input[type='number'] {
-      width: 100%;
-      padding: 8px 10px;
-      font-size: 18px;
-      border-radius: 6px;
-      border: 2px solid #2c9118;
-      font-family: 'Jersey 10', sans-serif;
-    }
-    button {
-      margin-top: 16px;
-      font-family: 'Jersey 10', sans-serif;
-      font-weight: 700;
-      font-size: 22px;
-      background: #2c9118;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.3s ease;
-      width: 100%;
-    }
-    button:hover {
-      background: #238110;
-    }
-    .error {
-      color: #b00000;
-      font-weight: 600;
-      margin-top: 10px;
-      user-select: none;
-    }
-    @media (max-width: 640px) {
-      main {
-        margin: 16px 10px;
-        padding: 16px;
-      }
-      h2 {
-        font-size: 26px;
-      }
-      .balance {
-        font-size: 18px;
-      }
-      input[type='number'], button {
-        font-size: 20px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bank - Tamenomics 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Jersey 10', sans-serif;
+    background-color: #fff;
+    color: #000;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    background-color: #2c9118;
+    color: white;
+    padding: 25px 20px;
+    text-align: center;
+  }
+  header h1 { font-size: 2.5rem; margin: 0; cursor: pointer; }
+  nav {
+    margin-top: 10px;
+  }
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 10px;
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+  nav a:hover { color: #000; }
+  main {
+    max-width: 600px;
+    margin: 30px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(44,145,24,0.3);
+    padding: 25px;
+    text-align: center;
+  }
+  h2 { color: #2c9118; margin-bottom: 20px; }
+  .balance { font-size: 1.2rem; margin: 10px 0; }
+  input[type="number"] {
+    padding: 10px;
+    width: 60%;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 2px solid #2c9118;
+    font-family: 'Jersey 10', sans-serif;
+    font-size: 1rem;
+  }
+  button {
+    padding: 12px 20px;
+    margin: 10px 0;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #2c9118;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+  button:hover { background-color: #1f6d13; }
+  .stats-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-top: 30px;
+  }
+  .stat-card {
+    background-color: #000;
+    color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    min-width: 150px;
+    margin: 10px;
+  }
+  .stat-card p { color: #2c9118; font-size: 1.5rem; font-weight: bold; margin: 5px 0 0; }
+  footer { text-align: center; padding: 20px; background-color: #000; color: #fff; margin-top: 30px; }
+</style>
 </head>
 <body>
-  <header>
-    <h1 onclick="location.href='/'">Tamenomics</h1>
-    <span class="menu-icon" onclick="toggleMenu()">&#9776;</span>
-    <nav class="topnav-right">
-      <div class="accordion-section">
-        <button class="accordion-toggle">Actions</button>
-        <div class="accordion-content">
-          <a href="hunt.html">Hunt</a>
-          <a href="fish.html">Fish</a>
-          <a href="crime.html">Crime</a>
-          <a href="search.html">Search</a>
-        </div>
-      </div>
-      <div class="accordion-section">
-        <button class="accordion-toggle">Economy</button>
-        <div class="accordion-content">
-          <a href="bank.html" class="active">Bank</a>
-          <a href="casino.html">Casino</a>
-          <a href="jobs.html">Jobs</a>
-          <a href="shop.html">Shop</a>
-          <a href="sell.html">Sell</a>
-        </div>
-      </div>
-    </nav>
-  </header>
 
-  <main>
-    <h2>Bank</h2>
-    <div class="balance">Cash: $<span id="cash">0</span></div>
-    <div class="balance">Bank: $<span id="bank">0</span></div>
+<header>
+  <h1 onclick="location.href='index.html'">Tamenomics 2</h1>
+  <nav>
+    <a href="bank.html">Bank</a>
+    <a href="jobs.html">Jobs</a>
+    <a href="fishing.html">Fishing</a>
+    <a href="hunting.html">Hunting</a>
+    <a href="shop.html">Shop</a>
+    <a href="items.html">Items</a>
+    <a href="minigames.html">Mini-Games</a>
+  </nav>
+</header>
 
-    <label for="deposit-amount">Deposit Amount</label>
-    <input type="number" id="deposit-amount" min="1" placeholder="Enter amount to deposit" />
-    <button id="deposit-btn">Deposit</button>
+<main>
+  <h2>Bank</h2>
+  <div class="balance">Cash: <span id="cash">0</span> Zenas</div>
+  <div class="balance">Bank: <span id="bank">0</span> Zenas</div>
 
-    <label for="withdraw-amount">Withdraw Amount</label>
-    <input type="number" id="withdraw-amount" min="1" placeholder="Enter amount to withdraw" />
-    <button id="withdraw-btn">Withdraw</button>
+  <input type="number" id="deposit-amount" placeholder="Deposit Amount">
+  <button id="deposit-btn">Deposit</button>
 
-    <div id="error-msg" class="error"></div>
-  </main>
+  <input type="number" id="withdraw-amount" placeholder="Withdraw Amount">
+  <button id="withdraw-btn">Withdraw</button>
 
-  <script>
-    // Initial state
-    let cash = 0;
-    let bank = 0;
+  <div class="stats-container">
+    <div class="stat-card">
+      <h3>Balance</h3>
+      <p id="balance-stat">0 Z</p>
+    </div>
+    <div class="stat-card">
+      <h3>Items</h3>
+      <p id="items-stat">None</p>
+    </div>
+    <div class="stat-card">
+      <h3>Jobs</h3>
+      <p id="jobs-stat">None</p>
+    </div>
+  </div>
+</main>
 
-    const cashEl = document.getElementById('cash');
-    const bankEl = document.getElementById('bank');
-    const depositInput = document.getElementById('deposit-amount');
-    const withdrawInput = document.getElementById('withdraw-amount');
-    const depositBtn = document.getElementById('deposit-btn');
-    const withdrawBtn = document.getElementById('withdraw-btn');
-    const errorMsg = document.getElementById('error-msg');
+<footer>&copy; 2025 Arztiser</footer>
 
-    function updateBalances() {
-      cashEl.innerText = cash;
-      bankEl.innerText = bank;
+<script>
+  let cash = 0;
+  let bank = 0;
+  let items = [];
+  let jobs = [];
+
+  const cashEl = document.getElementById('cash');
+  const bankEl = document.getElementById('bank');
+  const balanceStat = document.getElementById('balance-stat');
+  const itemsStat = document.getElementById('items-stat');
+  const jobsStat = document.getElementById('jobs-stat');
+
+  const depositBtn = document.getElementById('deposit-btn');
+  const withdrawBtn = document.getElementById('withdraw-btn');
+  const depositInput = document.getElementById('deposit-amount');
+  const withdrawInput = document.getElementById('withdraw-amount');
+
+  function updateStats() {
+    cashEl.textContent = cash;
+    bankEl.textContent = bank;
+    balanceStat.textContent = (cash + bank) + ' Z';
+    itemsStat.textContent = items.length ? items.join(', ') : 'None';
+    jobsStat.textContent = jobs.length ? jobs.join(', ') : 'None';
+  }
+
+  depositBtn.addEventListener('click', () => {
+    let amt = parseInt(depositInput.value);
+    if (!isNaN(amt) && amt > 0 && amt <= cash) {
+      cash -= amt;
+      bank += amt;
+      updateStats();
     }
+    depositInput.value = '';
+  });
 
-    depositBtn.addEventListener('click', () => {
-      const amount = parseInt(depositInput.value);
-      errorMsg.innerText = '';
-
-      if (isNaN(amount) || amount <= 0) {
-        errorMsg.innerText = 'Please enter a valid deposit amount.';
-        return;
-      }
-      if (amount > cash) {
-        errorMsg.innerText = "You don't have enough cash to deposit that amount.";
-        return;
-      }
-      cash -= amount;
-      bank += amount;
-      updateBalances();
-      depositInput.value = '';
-    });
-
-    withdrawBtn.addEventListener('click', () => {
-      const amount = parseInt(withdrawInput.value);
-      errorMsg.innerText = '';
-
-      if (isNaN(amount) || amount <= 0) {
-        errorMsg.innerText = 'Please enter a valid withdrawal amount.';
-        return;
-      }
-      if (amount > bank) {
-        errorMsg.innerText = "You don't have enough money in the bank to withdraw that amount.";
-        return;
-      }
-      bank -= amount;
-      cash += amount;
-      updateBalances();
-      withdrawInput.value = '';
-    });
-
-    // Initialize display
-    updateBalances();
-
-    // Menu toggle
-    function toggleMenu() {
-      document.querySelector('header').classList.toggle('active');
-      document.querySelector('.topnav-right').classList.toggle('active');
-      document.body.classList.toggle('menu-open');
+  withdrawBtn.addEventListener('click', () => {
+    let amt = parseInt(withdrawInput.value);
+    if (!isNaN(amt) && amt > 0 && amt <= bank) {
+      bank -= amt;
+      cash += amt;
+      updateStats();
     }
+    withdrawInput.value = '';
+  });
 
-    // Accordion functionality
-    document.querySelectorAll('.accordion-toggle').forEach(btn =>
-      btn.addEventListener('click', () => {
-        const section = btn.parentElement;
-        document.querySelectorAll('.accordion-section').forEach(s => {
-          if (s !== section) s.classList.remove('open');
-        });
-        section.classList.toggle('open');
-      })
-    );
-  </script>
+  updateStats();
+</script>
+
 </body>
 </html>
