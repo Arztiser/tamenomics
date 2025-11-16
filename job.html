@@ -18,9 +18,9 @@ button { padding: 12px 0; width: 90%; font-size: 1rem; font-family: 'Jersey 10',
 button:hover { background: #1f6d13; }
 button:disabled { background: #aaa; cursor: not-allowed; }
 select { width: 90%; padding: 10px; font-family: 'Jersey 10', sans-serif; font-size: 1rem; margin: 10px 0; border-radius: 8px; border: 2px solid #2c9118; }
-.stats-container { display: flex; justify-content: space-around; flex-wrap: wrap; margin-top: 35px; }
-.stat-card { background: #000; color: #fff; padding: 20px; border-radius: 12px; min-width: 150px; margin: 10px; }
-.stat-card p { color: #2c9118; font-size: 1.5rem; font-weight: bold; margin: 5px 0 0; }
+.stats-container { display: flex; justify-content: center; flex-wrap: wrap; margin-top: 35px; }
+.stat-card { background: #000; color: #fff; padding: 20px; border-radius: 12px; min-width: 200px; margin: 10px; }
+.stat-card p { color: #2c9118; font-size: 1.5rem; font-weight: bold; margin: 5px 0 0; word-wrap: break-word; }
 footer { text-align: center; padding: 20px; background: #000; color: #fff; margin-top: 30px; }
 label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; color: #2c9118; }
 </style>
@@ -53,12 +53,8 @@ label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; co
 
 <div class="stats-container">
   <div class="stat-card">
-    <h3>Balance</h3>
-    <p id="balance-stat">0 Z</p>
-  </div>
-  <div class="stat-card">
-    <h3>Items</h3>
-    <p id="items-stat">None</p>
+    <h3>Jobs</h3>
+    <p id="jobs-stat">None</p>
   </div>
 </div>
 </main>
@@ -66,17 +62,14 @@ label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; co
 <footer>&copy; 2025 Arztiser</footer>
 
 <script>
-let cash = parseInt(localStorage.getItem('cash')) || 0;
-let bank = parseInt(localStorage.getItem('bank')) || 0;
-let items = JSON.parse(localStorage.getItem('items')) || [];
+// Initialize state
 let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
 let currentJob = localStorage.getItem('currentJob') || null;
 let jobTakenToday = localStorage.getItem('jobTakenToday') === 'true';
 let jobCompletedToday = localStorage.getItem('jobCompletedToday') === 'true';
 let failedJobs = JSON.parse(localStorage.getItem('failedJobs')) || [];
 
-const balanceStat = document.getElementById('balance-stat');
-const itemsStat = document.getElementById('items-stat');
+const jobsStat = document.getElementById('jobs-stat');
 const jobSelect = document.getElementById('job-select');
 const applyJobBtn = document.getElementById('apply-job-btn');
 const completeJobBtn = document.getElementById('complete-job-btn');
@@ -95,8 +88,7 @@ const jobList = [
 ];
 
 function updateStats() {
-  balanceStat.textContent = (cash + bank) + ' Z';
-  itemsStat.textContent = items.length ? items.join(', ') : 'None';
+  jobsStat.textContent = jobs.length ? jobs.join(', ') : 'None';
   renderJobDropdown();
 
   // Disable complete job button if already completed
@@ -110,9 +102,7 @@ function updateStats() {
     completeJobBtn.style.cursor = 'pointer';
   }
 
-  localStorage.setItem('cash', cash);
-  localStorage.setItem('bank', bank);
-  localStorage.setItem('items', JSON.stringify(items));
+  localStorage.setItem('jobs', JSON.stringify(jobs));
   localStorage.setItem('currentJob', currentJob);
   localStorage.setItem('jobTakenToday', jobTakenToday);
   localStorage.setItem('jobCompletedToday', jobCompletedToday);
@@ -147,7 +137,6 @@ applyJobBtn.addEventListener('click', () => {
 
   if(Math.random() <= job.chance) {
     currentJob = job.name;
-    cash += job.pay;
     jobs.push(currentJob);
     jobTakenToday = true;
     alert(`Success! You got the job: ${job.name} and earned ${job.pay} Z.`);
@@ -163,7 +152,6 @@ completeJobBtn.addEventListener('click', () => {
   if(!currentJob) { alert("No current job to complete!"); return; }
 
   let job = jobList.find(j => j.name === currentJob);
-  cash += job ? job.pay : 0;
   alert(`Job completed! You earned ${job ? job.pay : 0} Z.`);
   currentJob = null;
   jobCompletedToday = true;
