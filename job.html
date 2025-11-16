@@ -42,7 +42,6 @@ label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; co
 
 <main>
 <h2>Jobs</h2>
-<div class="current-job">Current Job: <span id="current-job">None</span></div>
 
 <label for="job-select">Select a Job:</label>
 <select id="job-select">
@@ -61,10 +60,6 @@ label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; co
     <h3>Items</h3>
     <p id="items-stat">None</p>
   </div>
-  <div class="stat-card">
-    <h3>Jobs</h3>
-    <p id="jobs-stat">None</p>
-  </div>
 </div>
 </main>
 
@@ -80,10 +75,8 @@ let jobTakenToday = localStorage.getItem('jobTakenToday') === 'true';
 let jobCompletedToday = localStorage.getItem('jobCompletedToday') === 'true';
 let failedJobs = JSON.parse(localStorage.getItem('failedJobs')) || [];
 
-const currentJobEl = document.getElementById('current-job');
 const balanceStat = document.getElementById('balance-stat');
 const itemsStat = document.getElementById('items-stat');
-const jobsStat = document.getElementById('jobs-stat');
 const jobSelect = document.getElementById('job-select');
 const applyJobBtn = document.getElementById('apply-job-btn');
 const completeJobBtn = document.getElementById('complete-job-btn');
@@ -104,14 +97,22 @@ const jobList = [
 function updateStats() {
   balanceStat.textContent = (cash + bank) + ' Z';
   itemsStat.textContent = items.length ? items.join(', ') : 'None';
-  jobsStat.textContent = jobs.length ? jobs.join(', ') : 'None';
-  currentJobEl.textContent = currentJob || 'None';
   renderJobDropdown();
+
+  // Disable complete job button if already completed
+  if(jobCompletedToday) {
+    completeJobBtn.disabled = true;
+    completeJobBtn.style.background = '#aaa';
+    completeJobBtn.style.cursor = 'not-allowed';
+  } else {
+    completeJobBtn.disabled = false;
+    completeJobBtn.style.background = '#2c9118';
+    completeJobBtn.style.cursor = 'pointer';
+  }
 
   localStorage.setItem('cash', cash);
   localStorage.setItem('bank', bank);
   localStorage.setItem('items', JSON.stringify(items));
-  localStorage.setItem('jobs', JSON.stringify(jobs));
   localStorage.setItem('currentJob', currentJob);
   localStorage.setItem('jobTakenToday', jobTakenToday);
   localStorage.setItem('jobCompletedToday', jobCompletedToday);
