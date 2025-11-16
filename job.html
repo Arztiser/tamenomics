@@ -12,13 +12,15 @@ header h1 { font-size: 2.5rem; margin: 0; cursor: pointer; }
 nav { margin-top: 10px; }
 nav a { color: #fff; text-decoration: none; margin: 0 10px; font-weight: bold; font-size: 1.1rem; }
 nav a:hover { color: #000; }
-main { max-width: 600px; margin: 30px auto; background: #fff; border-radius: 12px; box-shadow: 0 0 15px rgba(44,145,24,0.3); padding: 30px 25px; text-align: center; }
+main { max-width: 700px; margin: 30px auto; background: #fff; border-radius: 12px; box-shadow: 0 0 15px rgba(44,145,24,0.3); padding: 30px 25px; text-align: center; }
 h2 { color: #2c9118; margin-bottom: 25px; font-size: 2rem; }
-button { padding: 12px 0; width: 85%; font-size: 1rem; font-family: 'Jersey 10', sans-serif; font-weight: bold; border: none; border-radius: 8px; background: #2c9118; color: #fff; cursor: pointer; margin: 10px 0; transition: background 0.3s; display: block; margin-left: auto; margin-right: auto; }
+button { padding: 12px 0; width: 90%; font-size: 1rem; font-family: 'Jersey 10', sans-serif; font-weight: bold; border: none; border-radius: 8px; background: #2c9118; color: #fff; cursor: pointer; margin: 8px 0; transition: background 0.3s; display: block; margin-left: auto; margin-right: auto; }
 button:hover { background: #1f6d13; }
+button:disabled { background: #aaa; cursor: not-allowed; }
 .stats-container { display: flex; justify-content: space-around; flex-wrap: wrap; margin-top: 35px; }
 .stat-card { background: #000; color: #fff; padding: 20px; border-radius: 12px; min-width: 150px; margin: 10px; }
 .stat-card p { color: #2c9118; font-size: 1.5rem; font-weight: bold; margin: 5px 0 0; }
+.job-buttons { margin-top: 20px; }
 footer { text-align: center; padding: 20px; background: #000; color: #fff; margin-top: 30px; }
 </style>
 </head>
@@ -40,7 +42,9 @@ footer { text-align: center; padding: 20px; background: #000; color: #fff; margi
 <main>
 <h2>Jobs</h2>
 <div class="current-job">Current Job: <span id="current-job">None</span></div>
-<button id="take-job-btn">Take a Job</button>
+
+<div class="job-buttons" id="job-buttons"></div>
+
 <button id="complete-job-btn">Complete Job</button>
 
 <div class="stats-container">
@@ -67,17 +71,15 @@ let bank = parseInt(localStorage.getItem('bank')) || 0;
 let items = JSON.parse(localStorage.getItem('items')) || [];
 let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
 let currentJob = localStorage.getItem('currentJob') || null;
-
-// Track if player has taken or completed job today
 let jobTakenToday = localStorage.getItem('jobTakenToday') === 'true';
 let jobCompletedToday = localStorage.getItem('jobCompletedToday') === 'true';
+let failedJobs = JSON.parse(localStorage.getItem('failedJobs')) || [];
 
 const currentJobEl = document.getElementById('current-job');
 const balanceStat = document.getElementById('balance-stat');
 const itemsStat = document.getElementById('items-stat');
 const jobsStat = document.getElementById('jobs-stat');
-
-const takeJobBtn = document.getElementById('take-job-btn');
+const jobButtonsDiv = document.getElementById('job-buttons');
 const completeJobBtn = document.getElementById('complete-job-btn');
 
 const jobList = [
@@ -106,38 +108,50 @@ function updateStats() {
   localStorage.setItem('currentJob', currentJob);
   localStorage.setItem('jobTakenToday', jobTakenToday);
   localStorage.setItem('jobCompletedToday', jobCompletedToday);
+  localStorage.setItem('failedJobs', JSON.stringify(failedJobs));
+
+  renderJobButtons();
 }
 
-// Take a job (once per day)
-takeJobBtn.addEventListener('click', () => {
+function renderJobButtons() {
+  jobButtonsDiv.innerHTML = '';
+  jobList.forEach(job => {
+    const btn = document.createElement('button');
+    btn.textContent = `${job.name} (${job.stars}★)`;
+    if(jobTakenToday || failedJobs.includes(job.name) || currentJob) {
+      btn.disabled = true;
+    }
+    btn.onclick = () => applyForJob(job);
+    jobButtonsDiv.appendChild(btn);
+  });
+}
+
+function applyForJob(job) {
   if(jobTakenToday) { alert("You already took a job today."); return; }
 
-  let selectedJob;
-  while(!selectedJob) {
-    let candidate = jobList[Math.floor(Math.random() * jobList.length)];
-    if(Math.random() <= candidate.chance) selectedJob = candidate;
+  if(Math.random() <= job.chance) {
+    currentJob = job.name;
+    cash += job.pay;
+    jobs.push(currentJob);
+    jobTakenToday = true;
+    alert(`Success! You got the job: ${job.name} and earned ${job.pay} Z.`);
+  } else {
+    failedJobs.push(job.name);
+    alert(`You were denied for ${job.name}. Try another job!`);
   }
-
-  currentJob = selectedJob.name;
-  jobs.push(currentJob);
-  cash += selectedJob.pay;
-  jobTakenToday = true;
   updateStats();
-  alert(`You got the job: ${currentJob} and earned ${selectedJob.pay} Z!`);
-});
+}
 
-// Complete job (once per day)
 completeJobBtn.addEventListener('click', () => {
   if(jobCompletedToday) { alert("You already completed a job today."); return; }
   if(!currentJob) { alert("No current job to complete!"); return; }
 
-  // Pay depends on job's star
   let job = jobList.find(j => j.name === currentJob);
-  if(job) cash += job.pay;
+  cash += job ? job.pay : 0;
+  alert(`Job completed! You earned ${job ? job.pay : 0} Z.`);
   currentJob = null;
   jobCompletedToday = true;
   updateStats();
-  alert(`Job completed! You earned ${job ? job.pay : 0} Z.`);
 });
 
 updateStats();
