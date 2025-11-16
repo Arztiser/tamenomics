@@ -10,18 +10,14 @@ body { font-family: 'Jersey 10', sans-serif; background: #fff; color: #000; marg
 header { background: #2c9118; color: #fff; padding: 25px 20px; text-align: center; }
 header h1 { font-size: 2.5rem; margin: 0; cursor: pointer; }
 nav { margin-top: 10px; }
-nav a { color: #fff; text-decoration: none; margin: 0 10px; font-weight: bold; font-size: 1.1rem; }
+nav a { color: #fff; text-decoration: none; margin: 0 10px; font-size: 1.1rem; font-weight: bold; }
 nav a:hover { color: #000; }
-main { max-width: 700px; margin: 30px auto; background: #fff; border-radius: 12px; box-shadow: 0 0 15px rgba(44,145,24,0.3); padding: 30px 25px; text-align: center; }
-h2 { color: #2c9118; margin-bottom: 25px; font-size: 2rem; }
-label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; color: #2c9118; }
-select, button { width: 90%; padding: 12px; font-family: 'Jersey 10', sans-serif; font-size: 1rem; margin: 10px 0; border-radius: 8px; border: 2px solid #2c9118; }
-button { background: #2c9118; color: #fff; border: none; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+main { max-width: 700px; margin: 30px auto; background: #fff; border-radius: 12px; box-shadow: 0 0 15px rgba(44,145,24,0.3); padding: 30px; text-align: center; }
+h2 { color: #2c9118; font-size: 2rem; margin-bottom: 20px; }
+select, button { width: 90%; padding: 12px; font-family: 'Jersey 10', sans-serif; margin: 12px 0; border: 2px solid #2c9118; border-radius: 8px; font-size: 1.1rem; }
+button { background: #2c9118; color: #fff; cursor: pointer; }
 button:hover { background: #1f6d13; }
 button:disabled { background: #aaa; cursor: not-allowed; }
-.stats-container { display: flex; justify-content: center; flex-wrap: wrap; margin-top: 35px; }
-.stat-card { background: #000; color: #fff; padding: 20px; border-radius: 12px; min-width: 200px; margin: 10px; }
-.stat-card p { color: #2c9118; font-size: 1.5rem; font-weight: bold; margin: 5px 0 0; word-wrap: break-word; }
 footer { text-align: center; padding: 20px; background: #000; color: #fff; margin-top: 30px; }
 </style>
 </head>
@@ -43,34 +39,22 @@ footer { text-align: center; padding: 20px; background: #000; color: #fff; margi
 <main>
 <h2>Fishing</h2>
 
-<label for="location-select">Choose a Fishing Location:</label>
 <select id="location-select">
-  <option value="" disabled selected>Select Location</option>
+  <option value="" disabled selected>Select Fishing Location</option>
   <option value="river">River</option>
   <option value="lake">Lake</option>
   <option value="ocean">Ocean</option>
 </select>
 
 <button id="fish-btn">Go Fishing!</button>
-
-<div class="stats-container">
-  <div class="stat-card">
-    <h3>Fish Caught</h3>
-    <p id="fish-stat">None</p>
-  </div>
-</div>
 </main>
 
 <footer>&copy; 2025 Arztiser</footer>
 
 <script>
-// Initialize state
-let items = JSON.parse(localStorage.getItem('items')) || [];
-const fishStat = document.getElementById('fish-stat');
-const locationSelect = document.getElementById('location-select');
-const fishBtn = document.getElementById('fish-btn');
+let items = JSON.parse(localStorage.getItem('items')) || {};
 
-// Example fish by rarity/location
+// Fishing data
 const fishData = {
   river: [
     {name: "Small Trout", value: 5, chance: 0.6},
@@ -89,45 +73,43 @@ const fishData = {
   ]
 };
 
-function updateFishStat() {
-  fishStat.textContent = items.length ? items.join(', ') : 'None';
+function saveItems() {
   localStorage.setItem('items', JSON.stringify(items));
 }
 
-function catchFish(location) {
-  const possibleFish = fishData[location];
-  let roll = Math.random();
-  let cumulative = 0;
-  for(let fish of possibleFish) {
-    cumulative += fish.chance;
-    if(roll <= cumulative) return fish;
-  }
-  return possibleFish[0]; // fallback
+function addItem(itemName) {
+  if (!items[itemName]) items[itemName] = 0;
+  items[itemName]++;
+  saveItems();
 }
 
-fishBtn.addEventListener('click', () => {
-  const location = locationSelect.value;
-  if(!location) { alert("Please select a location first!"); return; }
-
-  // Check if user has a fishing rod
-  const hasRod = items.includes("Fishing Rod");
-
-  let caught;
-  if(!hasRod) {
-    const junkItems = ["Mud", "Rock", "Boot"];
-    caught = junkItems[Math.floor(Math.random() * junkItems.length)];
-    alert(`You don't have a fishing rod and caught ${caught}.`);
-  } else {
-    const fish = catchFish(location);
-    caught = fish.name;
-    alert(`You caught a ${caught} worth ${fish.value} Z!`);
+function catchFish(location) {
+  const table = fishData[location];
+  let roll = Math.random();
+  let cumulative = 0;
+  for (let i of table) {
+    cumulative += i.chance;
+    if (roll <= cumulative) return i.name;
   }
+}
 
-  items.push(caught);
-  updateFishStat();
+document.getElementById('fish-btn').addEventListener('click', () => {
+  const location = document.getElementById('location-select').value;
+  if (!location) return alert("Select a location first!");
+
+  const hasRod = items["Fishing Rod"] > 0;
+
+  if (!hasRod) {
+    const junk = ["Mud", "Rock", "Boot"];
+    const caught = junk[Math.floor(Math.random() * junk.length)];
+    addItem(caught);
+    alert(`No fishing rod! You caught ${caught}.`);
+  } else {
+    const caught = catchFish(location);
+    addItem(caught);
+    alert(`You caught: ${caught}!`);
+  }
 });
-
-updateFishStat();
 </script>
 
 </body>
