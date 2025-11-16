@@ -83,7 +83,7 @@ const shopItems = [
   {name:"Luring", price:3500, type:"skills"}
 ];
 
-// Items that can be sold (including catches)
+// Items that can be sold (including hunting/fishing catches)
 const sellPrices = {
   "Car":1500,"Laptop":200,"Phone":150,"TV":300,"Bundle":20,"Fishing Rod":500,"Name Tag":50,"Rifle":1000,
   "Skunk":10,"Boar":25,"Bear":25,"Dragon":300,"Duck":15,"Deer":25,"Armadillo":25,"Boot":10,
@@ -92,10 +92,8 @@ const sellPrices = {
 
 const container = document.getElementById('shop-container');
 
-// Render shop items
 function renderShop() {
   container.innerHTML = '';
-
   shopItems.forEach(item => {
     const card = document.createElement('div');
     card.classList.add('item-card');
@@ -107,7 +105,6 @@ function renderShop() {
       <button class="sell-btn">Sell</button>
     `;
 
-    // Buy
     card.querySelector('.buy-btn').addEventListener('click', () => {
       if(bank < item.price){ alert("Not enough Zenas!"); return; }
       bank -= item.price;
@@ -117,7 +114,6 @@ function renderShop() {
       alert(`Bought ${item.name}!`);
     });
 
-    // Sell
     card.querySelector('.sell-btn').addEventListener('click', () => {
       if(!inventory[item.name] || inventory[item.name]<=0){ alert(`You don't have any ${item.name} to sell!`); return; }
       inventory[item.name]--;
@@ -131,22 +127,18 @@ function renderShop() {
   });
 }
 
-// Render inventory tab items for selling
 function renderInventoryTab() {
-  // Remove old inventory cards
   document.querySelectorAll('.item-card.inventory').forEach(c => c.remove());
-
   Object.keys(inventory).forEach(itemName => {
     if(inventory[itemName] > 0 && !shopItems.find(s => s.name === itemName)) {
       const card = document.createElement('div');
-      card.classList.add('item-card', 'inventory');
+      card.classList.add('item-card','inventory');
       card.dataset.type = 'inventory';
       card.innerHTML = `
         <h3>${itemName}</h3>
         <div class="price">${sellPrices[itemName] || 0} Zenas</div>
         <button class="sell-btn">Sell</button>
       `;
-
       card.querySelector('.sell-btn').addEventListener('click', () => {
         inventory[itemName]--;
         bank += sellPrices[itemName] || 0;
@@ -155,13 +147,12 @@ function renderInventoryTab() {
         alert(`Sold ${itemName} for ${sellPrices[itemName] || 0} Zenas!`);
         renderInventoryTab();
       });
-
       container.appendChild(card);
     }
   });
 }
 
-// Tab switching
+// Tabs
 const tabs = document.querySelectorAll('.tab-btn');
 tabs.forEach(tab => {
   tab.addEventListener('click', () => {
@@ -176,9 +167,7 @@ tabs.forEach(tab => {
 
 // Initial render
 renderShop();
-document.querySelectorAll('.item-card').forEach(c => {
-  if(c.dataset.type === 'technology') c.classList.add('active');
-});
+document.querySelectorAll('.item-card').forEach(c => { if(c.dataset.type==='technology') c.classList.add('active'); });
 </script>
 
 </body>
