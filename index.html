@@ -19,7 +19,7 @@
         }
 
         header {
-            background-color: #000;
+            background-color: #2c9118;
             color: #fff;
             padding: 25px 20px;
             text-align: center;
@@ -32,31 +32,55 @@
 
         header p {
             font-size: 1.2rem;
-            opacity: 0.85;
+            opacity: 0.9;
         }
 
-        nav {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            flex-wrap: wrap;
+        /* Accordion Menu */
+        .accordion {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            border: 2px solid #2c9118;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        nav a {
-            color: #fff;
-            text-decoration: none;
+        .accordion-item {
+            background-color: #fff;
+            border-bottom: 1px solid #2c9118;
+        }
+
+        .accordion-header {
+            padding: 15px 20px;
+            cursor: pointer;
             font-weight: bold;
-            padding: 8px 15px;
-            border: 2px solid #fff;
-            border-radius: 6px;
-            transition: all 0.3s;
+            background-color: #2c9118;
+            color: #fff;
+            transition: background 0.3s;
         }
 
-        nav a:hover {
-            background-color: #ff0;
-            color: #000;
-            border-color: #ff0;
+        .accordion-header:hover {
+            background-color: #1f6d13;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background-color: #f5f5f5;
+            padding: 0 20px;
+        }
+
+        .accordion-content a {
+            display: block;
+            padding: 10px 0;
+            color: #2c9118;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .accordion-content a:hover {
+            color: #1f6d13;
         }
 
         main {
@@ -98,7 +122,7 @@
         .stat-card p {
             font-size: 2rem;
             font-weight: bold;
-            color: #ff0;
+            color: #2c9118;
         }
 
         footer {
@@ -110,9 +134,10 @@
         }
 
         footer a {
-            color: #ff0;
+            color: #2c9118;
             text-decoration: none;
         }
+
     </style>
 </head>
 <body>
@@ -120,13 +145,23 @@
     <header>
         <h1>Tamenomics 2</h1>
         <p>The Economy, Upgraded</p>
-        <nav>
-            <a href="#" id="bank-btn">Bank</a>
-            <a href="#" id="jobs-btn">Jobs</a>
-            <a href="#" id="inventory-btn">Inventory</a>
-            <a href="#" id="mini-game-btn">Mini-Game</a>
-        </nav>
     </header>
+
+    <!-- Accordion Menu -->
+    <div class="accordion">
+        <div class="accordion-item">
+            <div class="accordion-header">Pages</div>
+            <div class="accordion-content">
+                <a href="#">Bank</a>
+                <a href="#">Jobs</a>
+                <a href="#">Fishing</a>
+                <a href="#">Hunting</a>
+                <a href="#">Shop</a>
+                <a href="#">Items</a>
+                <a href="#">Mini-Games</a>
+            </div>
+        </div>
+    </div>
 
     <main>
         <h2>Welcome to Tamenomics 2!</h2>
@@ -153,6 +188,20 @@
     </footer>
 
     <script>
+        // Accordion functionality
+        const headers = document.querySelectorAll('.accordion-header');
+        headers.forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        });
+
+        // Stats functionality
         let balance = 0;
         let items = [];
         let jobs = [];
@@ -161,29 +210,20 @@
         const itemsEl = document.getElementById('items');
         const jobsEl = document.getElementById('jobs');
 
-        document.getElementById('bank-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            balance += 100;
-            balanceEl.textContent = `$${balance}`;
-        });
+        // For demo: clicking accordion links updates stats
+        document.querySelectorAll('.accordion-content a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.textContent;
 
-        document.getElementById('jobs-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            const newJob = `Job #${jobs.length + 1}`;
-            jobs.push(newJob);
-            jobsEl.textContent = jobs.join(', ');
-        });
+                if(page === "Bank") balance += 100;
+                if(page === "Jobs") jobs.push(`Job #${jobs.length + 1}`);
+                if(page === "Items") items.push(`Item #${items.length + 1}`);
 
-        document.getElementById('inventory-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            const newItem = `Item #${items.length + 1}`;
-            items.push(newItem);
-            itemsEl.textContent = items.join(', ');
-        });
-
-        document.getElementById('mini-game-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('Mini-game coming soon!');
+                balanceEl.textContent = `$${balance}`;
+                itemsEl.textContent = items.length > 0 ? items.join(', ') : "None";
+                jobsEl.textContent = jobs.length > 0 ? jobs.join(', ') : "None";
+            });
         });
     </script>
 
