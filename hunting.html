@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hunting - Tamenomics 2</title>
 <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
-
 <style>
 body { font-family: 'Jersey 10', sans-serif; background: #fff; color: #000; margin: 0; padding: 0; }
 header { background: #2c9118; color: #fff; padding: 25px 20px; text-align: center; }
@@ -15,10 +14,10 @@ nav a { color: #fff; text-decoration: none; margin: 0 10px; font-size: 1.1rem; f
 nav a:hover { color: #000; }
 main { max-width: 700px; margin: 30px auto; background: #fff; border-radius: 12px; box-shadow: 0 0 15px rgba(44,145,24,0.3); padding: 30px; text-align: center; }
 h2 { color: #2c9118; font-size: 2rem; margin-bottom: 20px; }
-button { width: 90%; padding: 12px; font-family: 'Jersey 10', sans-serif; margin: 12px 0; border: 2px solid #2c9118; border-radius: 8px; font-size: 1.1rem; background: #2c9118; color: #fff; cursor: pointer; }
+select, button { width: 90%; padding: 12px; font-family: 'Jersey 10', sans-serif; margin: 12px 0; border: 2px solid #2c9118; border-radius: 8px; font-size: 1.1rem; }
+button { background: #2c9118; color: #fff; cursor: pointer; }
 button:hover { background: #1f6d13; }
 button:disabled { background: #aaa; cursor: not-allowed; }
-#message { font-size: 1.3rem; margin-top: 20px; }
 footer { text-align: center; padding: 20px; background: #000; color: #fff; margin-top: 30px; }
 </style>
 </head>
@@ -40,17 +39,16 @@ footer { text-align: center; padding: 20px; background: #000; color: #fff; margi
 <main>
 <h2>Hunting</h2>
 
-<div id="cooldown" style="color:red; font-size:1.3rem; display:none;">
-  You can hunt once per hour.
-</div>
-
-<div id="noweapon" style="color:red; font-size:1.3rem; display:none;">
-  You need a Rifle or Bow & Arrow to hunt.
-</div>
+<select id="location-select">
+  <option value="" disabled selected>Select Hunting Location</option>
+  <option value="forest">Forest</option>
+  <option value="plains">Plains</option>
+  <option value="mountain">Mountain</option>
+</select>
 
 <button id="hunt-btn">Go Hunting!</button>
 
-<div id="message"></div>
+<p id="cooldown-msg" style="color:#b00000; font-size:1.2rem;"></p>
 
 </main>
 
@@ -58,92 +56,127 @@ footer { text-align: center; padding: 20px; background: #000; color: #fff; margi
 
 <script>
 let items = JSON.parse(localStorage.getItem('items')) || {};
+let lastHunt = localStorage.getItem('lastHunt') || 0;
 
-function saveItems() {
-  localStorage.setItem('items', JSON.stringify(items));
-}
+// Animal tables
+const huntingData = {
+  forest: [
+    {name:"Bear", chance:0.30},
+    {name:"Deer", chance:0.50},
+    {name:"Skunk", chance:0.80},
+    {name:"Boar", chance:0.40},
+    {name:"Armadillo", chance:0.20}
+  ],
+  plains: [
+    {name:"Deer", chance:0.50},
+    {name:"Armadillo", chance:0.20},
+    {name:"Duck", chance:0.70},
+    {name:"Skunk", chance:0.80},
+    {name:"Boar", chance:0.40}
+  ],
+  mountain: [
+    {name:"Dragon", chance:0.05},
+    {name:"Boar", chance:0.40},
+    {name:"Bear", chance:0.30},
+    {name:"Deer", chance:0.50}
+  ]
+};
 
-function addItem(itemName) {
-  if (!items[itemName]) items[itemName] = 0;
-  items[itemName]++;
+function saveItems() { localStorage.setItem('items', JSON.stringify(items)); }
+function addItem(name) {
+  if (!items[name]) items[name] = 0;
+  items[name]++;
   saveItems();
 }
 
-const animals = [
-  "Bear", "Boar", "Skunk", "Deer",
-  "Dragon", "Duck", "Armadillo"
-];
-
-const COOLDOWN = 60 * 60 * 1000; // 1 hour
-let lastHunt = parseInt(localStorage.getItem("lastHuntTime")) || 0;
+function chooseAnimal(table) {
+  let roll = Math.random();
+  let cumulative = 0;
+  for (let a of table) {
+    cumulative += a.chance;
+    if (roll <= cumulative) return a.name;
+  }
+  return null;
+}
 
 function checkCooldown() {
   const now = Date.now();
-  if (now - lastHunt < COOLDOWN) {
-    document.getElementById("cooldown").style.display = "block";
+  const diff = now - lastHunt;
+  const hour = 3600000;
+
+  if (diff < hour) {
+    let mins = Math.ceil((hour - diff) / 60000);
+    document.getElementById("hunt-btn").disabled = true;
+    document.getElementById("cooldown-msg").innerText = `You must wait ${mins} more minutes.`;
     return true;
+  } else {
+    document.getElementById("hunt-btn").disabled = false;
+    document.getElementById("cooldown-msg").innerText = "";
+    return false;
   }
-  document.getElementById("cooldown").style.display = "none";
-  return false;
 }
 
+// Button click
 document.getElementById("hunt-btn").addEventListener("click", () => {
-
   if (checkCooldown()) return;
+
+  const location = document.getElementById("location-select").value;
+  if (!location) return alert("Select a hunting location.");
 
   const hasRifle = items["Rifle"] > 0;
   const hasBow = items["Bow"] > 0;
 
   if (!hasRifle && !hasBow) {
-    document.getElementById("noweapon").style.display = "block";
+    alert("You have no weapon to hunt with!");
     return;
-  } else {
-    document.getElementById("noweapon").style.display = "none";
   }
 
-  let result = "";
-  let caught = null;
+  const table = huntingData[location];
 
-  if (hasRifle) {
-    const breakChance = Math.random() < 0.10;
-    const missChance = Math.random() < 0.05;
+  // Determine weapon used
+  let weapon = hasRifle ? "Rifle" : "Bow";
 
-    if (breakChance) {
+  // Failure rates
+  if (weapon === "Rifle") {
+    if (Math.random() < 0.05) {
+      lastHunt = Date.now();
+      localStorage.setItem("lastHunt", lastHunt);
+      checkCooldown();
+      return alert("Your shot missed! You caught nothing.");
+    }
+    if (Math.random() < 0.10) {
       items["Rifle"]--;
       saveItems();
-      result = "Your rifle broke!";
-    } else if (missChance) {
-      result = "You missed and caught nothing.";
-    } else {
-      caught = animals[Math.floor(Math.random() * animals.length)];
-      addItem(caught);
-      result = `You caught: ${caught}!`;
+      alert("Your rifle broke!");
     }
-
-  } else if (hasBow) {
-    const breakChance = Math.random() < 0.20;
-    const success = Math.random() < 0.75;
-
-    if (breakChance) {
+  } else {
+    if (Math.random() < 0.20) {
       items["Bow"]--;
       saveItems();
-      result = "Your bow snapped!";
-    } else if (!success) {
-      result = "You missed and caught nothing.";
-    } else {
-      caught = animals[Math.floor(Math.random() * animals.length)];
-      addItem(caught);
-      result = `You caught: ${caught}!`;
+      alert("Your bow snapped!");
     }
   }
 
-  document.getElementById("message").innerText = result;
+  // Bow chance reduction
+  let adjustedTable = table.map(a => {
+    return weapon === "Bow" ? {name:a.name, chance:a.chance * 0.75} : a;
+  });
+
+  const caught = chooseAnimal(adjustedTable);
+
+  if (!caught) {
+    alert("You caught nothing...");
+  } else {
+    addItem(caught);
+    alert(`You caught a ${caught}!`);
+  }
 
   lastHunt = Date.now();
-  localStorage.setItem("lastHuntTime", lastHunt);
+  localStorage.setItem("lastHunt", lastHunt);
   checkCooldown();
 });
 
+// Start cooldown check
 checkCooldown();
 </script>
 
