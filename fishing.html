@@ -1,116 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fishing - Tamenomics 2</title>
-<link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
-<style>
-body { font-family: 'Jersey 10', sans-serif; background: #fff; color: #000; margin: 0; padding: 0; }
-header { background: #2c9118; color: #fff; padding: 25px 20px; text-align: center; }
-header h1 { font-size: 2.5rem; margin: 0; cursor: pointer; }
-nav { margin-top: 10px; }
-nav a { color: #fff; text-decoration: none; margin: 0 10px; font-size: 1.1rem; font-weight: bold; }
-nav a:hover { color: #000; }
-main { max-width: 700px; margin: 30px auto; background: #fff; border-radius: 12px; box-shadow: 0 0 15px rgba(44,145,24,0.3); padding: 30px; text-align: center; }
-h2 { color: #2c9118; font-size: 2rem; margin-bottom: 20px; }
-select, button { width: 90%; padding: 12px; font-family: 'Jersey 10', sans-serif; margin: 12px 0; border: 2px solid #2c9118; border-radius: 8px; font-size: 1.1rem; }
-button { background: #2c9118; color: #fff; cursor: pointer; }
-button:hover { background: #1f6d13; }
-button:disabled { background: #aaa; cursor: not-allowed; }
-footer { text-align: center; padding: 20px; background: #000; color: #fff; margin-top: 30px; }
-</style>
+    <meta charset="UTF-8">
+    <title>Fishing - Tamenomics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: white;
+            font-family: "Jersey 10", sans-serif;
+            padding: 20px;
+            color: black;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px solid black;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 450px;
+            backdrop-filter: blur(5px);
+        }
+
+        h1 {
+            color: #2c9118;
+            font-size: 40px;
+        }
+
+        button {
+            font-family: "Jersey 10", sans-serif;
+            font-size: 24px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 2px solid black;
+            background: #2c9118;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:disabled {
+            background: gray;
+            cursor: not-allowed;
+        }
+
+        .cooldown {
+            margin-top: 10px;
+            font-size: 20px;
+            color: black;
+        }
+    </style>
 </head>
 <body>
 
-<header>
-<h1 onclick="location.href='index.html'">Tamenomics 2</h1>
-<nav>
-  <a href="bank.html">Bank</a>
-  <a href="jobs.html">Jobs</a>
-  <a href="fishing.html">Fishing</a>
-  <a href="hunting.html">Hunting</a>
-  <a href="shop.html">Shop</a>
-  <a href="items.html">Items</a>
-  <a href="minigames.html">Mini-Games</a>
-</nav>
-</header>
+    <h1>Fishing</h1>
 
-<main>
-<h2>Fishing</h2>
+    <div class="card">
+        <p>You can fish once every hour.</p>
+        <button id="fishBtn" onclick="fishNow()">Fish</button>
+        <p id="cooldown" class="cooldown"></p>
+    </div>
 
-<select id="location-select">
-  <option value="" disabled selected>Select Fishing Location</option>
-  <option value="river">River</option>
-  <option value="lake">Lake</option>
-  <option value="ocean">Ocean</option>
-</select>
+    <script>
+        // --- Load inventory or create new ---
+        function getInventory() {
+            return JSON.parse(localStorage.getItem("inventory")) || {
+                fishing: {},
+                hunting: {},
+                shop: {}
+            };
+        }
 
-<button id="fish-btn">Go Fishing!</button>
-</main>
+        function saveInventory(inv) {
+            localStorage.setItem("inventory", JSON.stringify(inv));
+        }
 
-<footer>&copy; 2025 Arztiser</footer>
+        // --- Cooldown System ---
+        function canFish() {
+            let last = parseInt(localStorage.getItem("lastFishTime")) || 0;
+            return (Date.now() - last) >= 3600000;
+        }
 
-<script>
-let items = JSON.parse(localStorage.getItem('items')) || {};
+        function updateCooldownText() {
+            const cooldown = document.getElementById("cooldown");
+            const btn = document.getElementById("fishBtn");
+            let last = parseInt(localStorage.getItem("lastFishTime")) || 0;
 
-// Fishing data
-const fishData = {
-  river: [
-    {name: "Small Trout", value: 5, chance: 0.6},
-    {name: "Large Trout", value: 15, chance: 0.3},
-    {name: "Golden Trout", value: 50, chance: 0.1}
-  ],
-  lake: [
-    {name: "Carp", value: 5, chance: 0.5},
-    {name: "Bass", value: 20, chance: 0.35},
-    {name: "Legendary Bass", value: 60, chance: 0.15}
-  ],
-  ocean: [
-    {name: "Mackerel", value: 10, chance: 0.55},
-    {name: "Tuna", value: 30, chance: 0.35},
-    {name: "Shark", value: 80, chance: 0.1}
-  ]
-};
+            let remaining = 3600000 - (Date.now() - last);
 
-function saveItems() {
-  localStorage.setItem('items', JSON.stringify(items));
-}
+            if (remaining <= 0) {
+                cooldown.textContent = "You can fish now.";
+                btn.disabled = false;
+                return;
+            }
 
-function addItem(itemName) {
-  if (!items[itemName]) items[itemName] = 0;
-  items[itemName]++;
-  saveItems();
-}
+            let minutes = Math.floor(remaining / 60000);
+            let seconds = Math.floor((remaining % 60000) / 1000);
 
-function catchFish(location) {
-  const table = fishData[location];
-  let roll = Math.random();
-  let cumulative = 0;
-  for (let i of table) {
-    cumulative += i.chance;
-    if (roll <= cumulative) return i.name;
-  }
-}
+            cooldown.textContent = `Next cast in ${minutes}m ${seconds}s`;
+            btn.disabled = true;
 
-document.getElementById('fish-btn').addEventListener('click', () => {
-  const location = document.getElementById('location-select').value;
-  if (!location) return alert("Select a location first!");
+            requestAnimationFrame(updateCooldownText);
+        }
 
-  const hasRod = items["Fishing Rod"] > 0;
+        // --- Fishing Logic ---
+        function fishNow() {
+            if (!canFish()) {
+                alert("You can only fish once every hour!");
+                return;
+            }
 
-  if (!hasRod) {
-    const junk = ["Mud", "Rock", "Boot"];
-    const caught = junk[Math.floor(Math.random() * junk.length)];
-    addItem(caught);
-    alert(`No fishing rod! You caught ${caught}.`);
-  } else {
-    const caught = catchFish(location);
-    addItem(caught);
-    alert(`You caught: ${caught}!`);
-  }
-});
-</script>
+            localStorage.setItem("lastFishTime", Date.now());
+            updateCooldownText();
+
+            let inv = getInventory();
+            let hasRod = inv.shop["Fishing Rod"] >= 1;
+
+            let pool = hasRod
+                ? ["Bass", "Catfish", "Sunfish", "Salmon"]
+                : ["Mud", "Rock", "Boot"];
+
+            let item = pool[Math.floor(Math.random() * pool.length)];
+
+            inv.fishing[item] = (inv.fishing[item] || 0) + 1;
+
+            saveInventory(inv);
+
+            alert("You caught: " + item);
+        }
+
+        updateCooldownText();
+    </script>
 
 </body>
 </html>
