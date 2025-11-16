@@ -17,11 +17,12 @@ h2 { color: #2c9118; margin-bottom: 25px; font-size: 2rem; }
 button { padding: 12px 0; width: 90%; font-size: 1rem; font-family: 'Jersey 10', sans-serif; font-weight: bold; border: none; border-radius: 8px; background: #2c9118; color: #fff; cursor: pointer; margin: 8px 0; transition: background 0.3s; display: block; margin-left: auto; margin-right: auto; }
 button:hover { background: #1f6d13; }
 button:disabled { background: #aaa; cursor: not-allowed; }
+select { width: 90%; padding: 10px; font-family: 'Jersey 10', sans-serif; font-size: 1rem; margin: 10px 0; border-radius: 8px; border: 2px solid #2c9118; }
 .stats-container { display: flex; justify-content: space-around; flex-wrap: wrap; margin-top: 35px; }
 .stat-card { background: #000; color: #fff; padding: 20px; border-radius: 12px; min-width: 150px; margin: 10px; }
 .stat-card p { color: #2c9118; font-size: 1.5rem; font-weight: bold; margin: 5px 0 0; }
-.job-buttons { margin-top: 20px; }
 footer { text-align: center; padding: 20px; background: #000; color: #fff; margin-top: 30px; }
+label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; color: #2c9118; }
 </style>
 </head>
 <body>
@@ -43,7 +44,11 @@ footer { text-align: center; padding: 20px; background: #000; color: #fff; margi
 <h2>Jobs</h2>
 <div class="current-job">Current Job: <span id="current-job">None</span></div>
 
-<div class="job-buttons" id="job-buttons"></div>
+<label for="job-select">Select a Job:</label>
+<select id="job-select">
+  <option value="" disabled selected>Choose a job</option>
+</select>
+<button id="apply-job-btn">Apply for Job</button>
 
 <button id="complete-job-btn">Complete Job</button>
 
@@ -79,7 +84,8 @@ const currentJobEl = document.getElementById('current-job');
 const balanceStat = document.getElementById('balance-stat');
 const itemsStat = document.getElementById('items-stat');
 const jobsStat = document.getElementById('jobs-stat');
-const jobButtonsDiv = document.getElementById('job-buttons');
+const jobSelect = document.getElementById('job-select');
+const applyJobBtn = document.getElementById('apply-job-btn');
 const completeJobBtn = document.getElementById('complete-job-btn');
 
 const jobList = [
@@ -100,6 +106,7 @@ function updateStats() {
   itemsStat.textContent = items.length ? items.join(', ') : 'None';
   jobsStat.textContent = jobs.length ? jobs.join(', ') : 'None';
   currentJobEl.textContent = currentJob || 'None';
+  renderJobDropdown();
 
   localStorage.setItem('cash', cash);
   localStorage.setItem('bank', bank);
@@ -109,25 +116,33 @@ function updateStats() {
   localStorage.setItem('jobTakenToday', jobTakenToday);
   localStorage.setItem('jobCompletedToday', jobCompletedToday);
   localStorage.setItem('failedJobs', JSON.stringify(failedJobs));
-
-  renderJobButtons();
 }
 
-function renderJobButtons() {
-  jobButtonsDiv.innerHTML = '';
+function renderJobDropdown() {
+  jobSelect.innerHTML = '<option value="" disabled selected>Choose a job</option>';
+  if(currentJob || jobTakenToday) {
+    jobSelect.disabled = true;
+    applyJobBtn.disabled = true;
+    return;
+  } else {
+    jobSelect.disabled = false;
+    applyJobBtn.disabled = false;
+  }
+
   jobList.forEach(job => {
-    const btn = document.createElement('button');
-    btn.textContent = `${job.name} (${job.stars}★)`;
-    if(jobTakenToday || failedJobs.includes(job.name) || currentJob) {
-      btn.disabled = true;
+    if(!failedJobs.includes(job.name)) {
+      const opt = document.createElement('option');
+      opt.value = job.name;
+      opt.textContent = `${job.name} (${job.stars}★)`;
+      jobSelect.appendChild(opt);
     }
-    btn.onclick = () => applyForJob(job);
-    jobButtonsDiv.appendChild(btn);
   });
 }
 
-function applyForJob(job) {
-  if(jobTakenToday) { alert("You already took a job today."); return; }
+applyJobBtn.addEventListener('click', () => {
+  const selectedJobName = jobSelect.value;
+  if(!selectedJobName) return alert("Please select a job!");
+  const job = jobList.find(j => j.name === selectedJobName);
 
   if(Math.random() <= job.chance) {
     currentJob = job.name;
@@ -140,7 +155,7 @@ function applyForJob(job) {
     alert(`You were denied for ${job.name}. Try another job!`);
   }
   updateStats();
-}
+});
 
 completeJobBtn.addEventListener('click', () => {
   if(jobCompletedToday) { alert("You already completed a job today."); return; }
