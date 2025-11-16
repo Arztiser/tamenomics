@@ -49,15 +49,14 @@ label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; co
   <option value="" disabled selected>Choose a job</option>
 </select>
 <button id="apply-job-btn">Apply for Job</button>
-
 <button id="complete-job-btn">Complete Job</button>
 
 <div class="timer" id="job-timer"></div>
 
 <div class="stats-container">
   <div class="stat-card">
-    <h3>Jobs</h3>
-    <p id="jobs-stat">None</p>
+    <h3>Current Job</h3>
+    <p id="current-job-stat">None</p>
   </div>
 </div>
 </main>
@@ -69,17 +68,18 @@ label { display: block; margin-top: 15px; font-weight: bold; font-size: 1rem; co
 let bank = parseInt(localStorage.getItem('bank') || 0);
 
 // Initialize state
-let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
 let currentJob = localStorage.getItem('currentJob') || null;
 let lastJobTime = parseInt(localStorage.getItem('lastJobTime') || 0);
-let failedJobs = JSON.parse(localStorage.getItem('failedJobs')) || [];
+let failedJobs = JSON.parse(localStorage.getItem('failedJobs') || []);
 
+// DOM Elements
 const jobSelect = document.getElementById('job-select');
 const applyJobBtn = document.getElementById('apply-job-btn');
 const completeJobBtn = document.getElementById('complete-job-btn');
-const jobsStat = document.getElementById('jobs-stat');
+const currentJobStat = document.getElementById('current-job-stat');
 const jobTimer = document.getElementById('job-timer');
 
+// Job data
 const jobList = [
   {name:"Fast Food Worker", stars:1, pay:10, chance:0.95},
   {name:"Taxi Driver", stars:1, pay:10, chance:0.95},
@@ -97,10 +97,9 @@ const jobList = [
 const JOB_COOLDOWN = 24 * 60 * 60 * 1000;
 
 function updateStats() {
-  jobsStat.textContent = jobs.length ? jobs.join(', ') : 'None';
+  currentJobStat.textContent = currentJob || "None";
   renderJobDropdown();
   checkCooldown();
-  localStorage.setItem('jobs', JSON.stringify(jobs));
   localStorage.setItem('currentJob', currentJob);
   localStorage.setItem('lastJobTime', lastJobTime);
   localStorage.setItem('failedJobs', JSON.stringify(failedJobs));
@@ -110,9 +109,9 @@ function updateStats() {
 function renderJobDropdown() {
   jobSelect.innerHTML = '<option value="" disabled selected>Choose a job</option>';
 
-  // Disable if on cooldown or already have a job
   const now = Date.now();
   const remaining = JOB_COOLDOWN - (now - lastJobTime);
+
   if(currentJob || remaining > 0) {
     jobSelect.disabled = true;
     applyJobBtn.disabled = true;
@@ -131,14 +130,13 @@ function renderJobDropdown() {
   });
 }
 
-// Cooldown timer
 function checkCooldown() {
   const now = Date.now();
   let remaining = JOB_COOLDOWN - (now - lastJobTime);
 
   if(remaining <= 0) {
     jobTimer.textContent = '';
-    applyJobBtn.disabled = false;
+    applyJobBtn.disabled = !!currentJob;
     completeJobBtn.disabled = !currentJob;
   } else {
     const hours = Math.floor(remaining / (1000*60*60));
@@ -158,13 +156,12 @@ applyJobBtn.addEventListener('click', () => {
 
   if(Math.random() <= job.chance) {
     currentJob = job.name;
-    jobs.push(currentJob);
     lastJobTime = Date.now();
     alert(`Success! You got the job: ${job.name}`);
   } else {
     failedJobs.push(job.name);
     lastJobTime = Date.now();
-    alert(`You were denied for ${job.name}. Try another job tomorrow!`);
+    alert(`You were denied for ${job.name}. Try again tomorrow.`);
   }
   updateStats();
 });
