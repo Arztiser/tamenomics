@@ -12,8 +12,12 @@ header h1 { font-size:2.5rem; margin:0; cursor:pointer; }
 nav { margin-top:10px; }
 nav a { color:#fff; text-decoration:none; margin:0 10px; font-size:1.1rem; font-weight:bold; }
 nav a:hover { color:#000; }
-main { max-width:900px; margin:30px auto; padding:20px; display:grid; gap:20px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
-.item-card { border:2px solid #2c9118; border-radius:12px; padding:15px; text-align:center; box-shadow:0 0 10px rgba(44,145,24,0.2); }
+.tabs { display:flex; justify-content:center; margin:20px 0; gap:10px; flex-wrap:wrap; }
+.tab-btn { padding:10px 20px; border:2px solid #2c9118; border-radius:8px; background:#fff; color:#2c9118; cursor:pointer; font-family:'Jersey 10',sans-serif; font-size:1rem; }
+.tab-btn.active { background:#2c9118; color:#fff; }
+main { max-width:900px; margin:0 auto 30px; display:grid; gap:20px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); padding:0 10px; }
+.item-card { border:2px solid #2c9118; border-radius:12px; padding:15px; text-align:center; box-shadow:0 0 10px rgba(44,145,24,0.2); display:none; }
+.item-card.active { display:block; }
 .item-card h3 { margin:10px 0; color:#2c9118; }
 .item-card .price { font-weight:700; margin:10px 0; }
 .item-card button { width:90%; padding:10px; margin:5px 0; font-family:'Jersey 10',sans-serif; font-size:1rem; border-radius:8px; border:2px solid #2c9118; cursor:pointer; }
@@ -39,57 +43,63 @@ footer { text-align:center; padding:20px; background:#000; color:#fff; margin-to
 </nav>
 </header>
 
+<div class="tabs">
+<button class="tab-btn active" data-tab="technology">Technology</button>
+<button class="tab-btn" data-tab="items">Items</button>
+<button class="tab-btn" data-tab="pets">Pets</button>
+<button class="tab-btn" data-tab="skills">Skills</button>
+</div>
+
 <main id="shop-container"></main>
 
 <footer>&copy; 2025 Arztiser</footer>
 
 <script>
-// Inventory and Money
 let inventory = JSON.parse(localStorage.getItem('items')) || {};
 let money = parseInt(localStorage.getItem('money') || 0);
 
-// Shop Items
 const shopItems = [
   {name:"Car", price:3000, type:"technology"},
   {name:"Laptop", price:400, type:"technology"},
   {name:"Phone", price:300, type:"technology"},
   {name:"TV", price:600, type:"technology"},
-  {name:"Bundle", price:40, type:"item"},
-  {name:"Fishing Rod", price:1000, type:"item"},
-  {name:"Name Tag", price:100, type:"item"},
-  {name:"Rifle", price:2000, type:"item"},
-  {name:"Capybara", price:1000, type:"pet"},
-  {name:"Cat", price:200, type:"pet"},
-  {name:"Chicken", price:150, type:"pet"},
-  {name:"Dog", price:200, type:"pet"},
-  {name:"Hamster", price:100, type:"pet"},
-  {name:"Parrot", price:100, type:"pet"},
-  {name:"Rabbit", price:150, type:"pet"},
-  {name:"Rock", price:50, type:"pet"},
-  {name:"Snake", price:300, type:"pet"},
-  {name:"Affluence", price:5000, type:"skill"},
-  {name:"Bargaining", price:7000, type:"skill"},
-  {name:"Luring", price:3500, type:"skill"}
+  {name:"Bundle", price:40, type:"items"},
+  {name:"Fishing Rod", price:1000, type:"items"},
+  {name:"Name Tag", price:100, type:"items"},
+  {name:"Rifle", price:2000, type:"items"},
+  {name:"Capybara", price:1000, type:"pets"},
+  {name:"Cat", price:200, type:"pets"},
+  {name:"Chicken", price:150, type:"pets"},
+  {name:"Dog", price:200, type:"pets"},
+  {name:"Hamster", price:100, type:"pets"},
+  {name:"Parrot", price:100, type:"pets"},
+  {name:"Rabbit", price:150, type:"pets"},
+  {name:"Rock", price:50, type:"pets"},
+  {name:"Snake", price:300, type:"pets"},
+  {name:"Affluence", price:5000, type:"skills"},
+  {name:"Bargaining", price:7000, type:"skills"},
+  {name:"Luring", price:3500, type:"skills"}
 ];
 
-// Sell prices
 const sellPrices = {
   "Car":1500,"Laptop":200,"Phone":150,"TV":300,"Bundle":20,"Fishing Rod":500,"Name Tag":50,"Rifle":1000,
   "Skunk":10,"Boar":25,"Bear":25,"Dragon":300,"Duck":15,"Deer":25,"Armadillo":25,"Boot":10,"Fish":20,
   "Tropical Fish":30,"Pufferfish":20,"Shark":300,"Otter":50,"Crab":30
 };
 
-// Render shop items
+// Render shop
 const container = document.getElementById('shop-container');
 shopItems.forEach(item => {
   const card = document.createElement('div');
   card.classList.add('item-card');
+  card.dataset.type = item.type;
   card.innerHTML = `
     <h3>${item.name}</h3>
     <div class="price">${item.price} Zenas</div>
     <button class="buy-btn">Buy</button>
     <button class="sell-btn">Sell</button>
   `;
+
   // Buy
   card.querySelector('.buy-btn').addEventListener('click',()=>{
     if(money<item.price){ alert("Not enough Zenas!"); return; }
@@ -99,6 +109,7 @@ shopItems.forEach(item => {
     localStorage.setItem('items', JSON.stringify(inventory));
     alert(`Bought ${item.name}!`);
   });
+
   // Sell
   card.querySelector('.sell-btn').addEventListener('click',()=>{
     if(!inventory[item.name] || inventory[item.name]<=0){ alert(`You don't have any ${item.name} to sell!`); return; }
@@ -108,7 +119,27 @@ shopItems.forEach(item => {
     localStorage.setItem('items', JSON.stringify(inventory));
     alert(`Sold ${item.name} for ${sellPrices[item.name]} Zenas!`);
   });
+
   container.appendChild(card);
+});
+
+// Tab switching
+const tabs = document.querySelectorAll('.tab-btn');
+tabs.forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    tabs.forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const type = tab.dataset.tab;
+    document.querySelectorAll('.item-card').forEach(card=>{
+      card.classList.remove('active');
+      if(card.dataset.type === type) card.classList.add('active');
+    });
+  });
+});
+
+// Activate first tab on load
+document.querySelectorAll('.item-card').forEach(card=>{
+  if(card.dataset.type === 'technology') card.classList.add('active');
 });
 </script>
 
