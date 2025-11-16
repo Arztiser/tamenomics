@@ -55,8 +55,8 @@ footer { text-align:center; padding:20px; background:#000; color:#fff; margin-to
 <footer>&copy; 2025 Arztiser</footer>
 
 <script>
-let inventory = JSON.parse(localStorage.getItem('items')) || {};
 let money = parseInt(localStorage.getItem('money') || 0);
+let inventory = JSON.parse(localStorage.getItem('items') || '{}');
 
 const shopItems = [
   {name:"Car", price:3000, type:"technology"},
@@ -87,7 +87,6 @@ const sellPrices = {
   "Tropical Fish":30,"Pufferfish":20,"Shark":300,"Otter":50,"Crab":30
 };
 
-// Render shop
 const container = document.getElementById('shop-container');
 shopItems.forEach(item => {
   const card = document.createElement('div');
@@ -100,9 +99,8 @@ shopItems.forEach(item => {
     <button class="sell-btn">Sell</button>
   `;
 
-  // Buy
-  card.querySelector('.buy-btn').addEventListener('click',()=>{
-    if(money<item.price){ alert("Not enough Zenas!"); return; }
+  card.querySelector('.buy-btn').addEventListener('click', () => {
+    if(money < item.price) return alert("Not enough Zenas!");
     money -= item.price;
     inventory[item.name] = (inventory[item.name]||0)+1;
     localStorage.setItem('money', money);
@@ -110,9 +108,8 @@ shopItems.forEach(item => {
     alert(`Bought ${item.name}!`);
   });
 
-  // Sell
-  card.querySelector('.sell-btn').addEventListener('click',()=>{
-    if(!inventory[item.name] || inventory[item.name]<=0){ alert(`You don't have any ${item.name} to sell!`); return; }
+  card.querySelector('.sell-btn').addEventListener('click', () => {
+    if(!inventory[item.name] || inventory[item.name]<=0) return alert(`No ${item.name} to sell!`);
     inventory[item.name]--;
     money += sellPrices[item.name] || 0;
     localStorage.setItem('money', money);
@@ -123,22 +120,22 @@ shopItems.forEach(item => {
   container.appendChild(card);
 });
 
-// Tab switching
+// Tabs
 const tabs = document.querySelectorAll('.tab-btn');
-tabs.forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    tabs.forEach(t=>t.classList.remove('active'));
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     const type = tab.dataset.tab;
-    document.querySelectorAll('.item-card').forEach(card=>{
+    document.querySelectorAll('.item-card').forEach(card => {
       card.classList.remove('active');
       if(card.dataset.type === type) card.classList.add('active');
     });
   });
 });
 
-// Activate first tab on load
-document.querySelectorAll('.item-card').forEach(card=>{
+// Activate first tab
+document.querySelectorAll('.item-card').forEach(card => {
   if(card.dataset.type === 'technology') card.classList.add('active');
 });
 </script>
