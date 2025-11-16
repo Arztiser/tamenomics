@@ -24,7 +24,7 @@ footer { text-align:center; padding:20px; background:#000; color:#fff; margin-to
 <h1 onclick="location.href='index.html'">Tamenomics 2</h1>
 <nav>
   <a href="bank.html">Bank</a>
-  <a href="job.html">Jobs</a>
+  <a href="jobs.html">Jobs</a>
   <a href="fishing.html">Fishing</a>
   <a href="hunting.html">Hunting</a>
   <a href="shop.html">Shop</a>
@@ -44,36 +44,38 @@ footer { text-align:center; padding:20px; background:#000; color:#fff; margin-to
 <footer>&copy; 2025 Arztiser</footer>
 
 <script>
-// Initialize balance if it doesn't exist
-if (!localStorage.getItem('balance')) localStorage.setItem('balance', '0');
+// Use 'bank' as the global economy key
+if (!localStorage.getItem('bank')) {
+    const startingBalance = Math.floor(Math.random() * 501) + 500; // 500–1000 Zenas
+    localStorage.setItem('bank', startingBalance);
+}
 
 const balanceEl = document.getElementById('balance-display');
 
-// Update display
 function updateBalanceDisplay() {
-  balanceEl.textContent = localStorage.getItem('balance');
+    balanceEl.textContent = localStorage.getItem('bank');
 }
 
-// Live update loop
+// Live update so changes on other pages reflect immediately
 function liveUpdate() {
-  updateBalanceDisplay();
-  requestAnimationFrame(liveUpdate);
+    updateBalanceDisplay();
+    requestAnimationFrame(liveUpdate);
 }
 
 liveUpdate();
 
-// Functions to modify balance
+// Functions for modifying bank balance globally
 function addZenas(amount) {
-  let balance = parseInt(localStorage.getItem('balance')) || 0;
-  balance += amount;
-  localStorage.setItem('balance', balance);
+    let bank = parseInt(localStorage.getItem('bank')) || 0;
+    bank += amount;
+    localStorage.setItem('bank', bank);
 }
 
 function subtractZenas(amount) {
-  let balance = parseInt(localStorage.getItem('balance')) || 0;
-  balance -= amount;
-  if (balance < 0) balance = 0;
-  localStorage.setItem('balance', balance);
+    let bank = parseInt(localStorage.getItem('bank')) || 0;
+    bank -= amount;
+    if (bank < 0) bank = 0;
+    localStorage.setItem('bank', bank);
 }
 
 // Example usage:
